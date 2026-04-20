@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>測試 API 連線</title>
+</head>
+<body>
+    <h1>資料測試介面</h1>
+    <pre id="raw_data">正在抓取資料...</pre>
+
+    <script>
+        // 1. 換成你的 GAS 網址
+        const API_URL = '你的_GAS_部署網址'; 
+
+        async function testFetch() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                
+                // 2. 直接把抓到的 JSON 轉成字串印在畫面上
+                document.getElementById('raw_data').innerText = JSON.stringify(data, null, 2);
+            } catch (e) {
+                document.getElementById('raw_data').innerText = '失敗了，錯誤原因：' + e;
+            }
+        }
+
+        testFetch();
+    </script>
+</body>
+</html>
