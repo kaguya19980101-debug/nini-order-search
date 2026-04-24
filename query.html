@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>妮妮訂單查詢</title>
+    <title>訂單查詢 - 妮妮小舖</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -22,68 +22,37 @@
         <ul>
             <li><a href="index.html"><i class="fas fa-star"></i> 首頁</a></li>
             <li><a href="query.html"><i class="fas fa-heart"></i> 訂單查詢</a></li>
-            <li><a href="#"><i class="fas fa-comment-dots"></i> 最新公告</a></li>
         </ul>
     </nav>
 
     <main class="main-content">
-        <section class="hero-carousel">
-            <div class="carousel-placeholder">
-                <i class="far fa-images"></i>
-                <p>左右輪播圖片預留區</p>
-            </div>
-        </section>
-
         <section class="search-section">
             <div class="search-container">
                 <h2 class="search-title">訂單查詢</h2>
                 <div class="search-form-card">
                     <div class="input-group">
                         <label for="community-name"><i class="fas fa-users"></i> 社群名稱</label>
-                        <input type="text" id="community-name" placeholder="例如：妮妮好物社">
+                        <input type="text" id="community-name" placeholder="請輸入社群名稱">
                     </div>
                     <div class="input-group">
                         <label for="phone-number"><i class="fas fa-mobile-alt"></i> 手機號碼</label>
-                        <input type="tel" id="phone-number" placeholder="請輸入後三碼或完整門號">
+                        <input type="tel" id="phone-number" placeholder="請輸入手機號碼">
                     </div>
                     <button type="button" id="submit-query" class="btn-primary">
                         <i class="fas fa-magic"></i> 開始查詢
-                    </button>
+                    </div>
                 </div>
             </div>
         </section>
 
         <section id="result-section" class="result-section" style="display: none;">
-            <div class="result-card">
-                <div id="result-content"></div>
-            </div>
-        </section>
-
-        <section class="notice-board">
-            <div class="section-title">
-                <span>✦</span> 重要佈告欄
-            </div>
-            <div class="notice-list">
-                <div class="notice-item">
-                    <div class="notice-tag">NEW</div>
-                    <div class="notice-body">
-                        <span class="date">2026.04.24</span>
-                        <p>系統維護公告：本週日凌晨會休息一下喔！</p>
-                    </div>
+            <div class="section-title">✦ 我的訂單紀錄</div>
+            <div id="cards-container" class="cards-container">
                 </div>
-                <div class="notice-item">
-                    <div class="notice-tag">INFO</div>
-                    <div class="notice-body">
-                        <span class="date">2026.04.20</span>
-                        <p>現在支援透過 LINE Notify 接收通知囉～</p>
-                    </div>
-                </div>
-            </div>
         </section>
     </main>
 
     <div id="overlay" class="overlay"></div>
-
     <script src="script.js"></script>
 </body>
 </html>

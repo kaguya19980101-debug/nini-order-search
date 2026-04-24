@@ -189,3 +189,69 @@ body {
     z-index: 1500;
 }
 .overlay.active { display: block; }
+
+/* 查詢標題 */
+.search-title {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-weight: 900;
+}
+
+/* 查詢表單卡片 */
+.search-form-card {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.input-group {
+    text-align: left;
+    margin-bottom: 1.5rem;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #fff0f0;
+    border-radius: 15px;
+    outline: none;
+    font-size: 1rem;
+    background: #fffafa;
+    transition: 0.3s;
+}
+
+.input-group input:focus {
+    border-color: var(--primary-color);
+    background: var(--white);
+}
+
+/* 查詢按鈕寬度調整 */
+#submit-query {
+    width: 100%;
+    margin-top: 0.5rem;
+    font-size: 1.1rem;
+}
+
+/* 結果區塊樣式 */
+.result-section {
+    margin-top: 2rem;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
