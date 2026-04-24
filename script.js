@@ -77,20 +77,23 @@ function fetchDataFromGAS(community, phone) {
                 // 依日期排序 (新到舊)
                 const sorted = data.orders.sort((a, b) => new Date(b.date) - new Date(a.date));
                 
-                container.innerHTML = sorted.map(order => `
-                    <div class="order-card">
-                        <div class="card-header">
-                            <span class="type-tag">${order.type}</span>
-                            <span class="order-date">${order.date}</span>
-                        </div>
-                        <div class="item-name">${order.item}</div>
-                        <div class="price-info">
-                            <div class="price-item"><span>價格</span><strong>$${order.price}</strong></div>
-                            <div class="price-item"><span>已付</span><strong>$${order.paid}</strong></div>
-                            <div class="price-item"><span>剩餘</span><strong class="remaining">$${order.balance}</strong></div>
-                        </div>
+               container.innerHTML = sorted.map(order => `
+                <div class="order-card">
+                    <div class="card-header">
+                        <span class="type-tag">${order.type || '一般'}</span>
+                        <span class="order-date">${order.date}</span>
                     </div>
-                `).join('');
+                    <div class="item-name">${order.item}</div> 
+                    <div class="status-badge ${order.status === '已完成' ? 'status-completed' : ''}">
+                        ${order.status}
+                    </div>
+                    <div class="price-info">
+                        <div class="price-item"><span>價格</span><strong>$${order.price}</strong></div>
+                        <div class="price-item"><span>已付</span><strong>$${order.paid}</strong></div>
+                        <div class="price-item"><span>剩餘</span><strong class="remaining">$${order.balance}</strong></div>
+                    </div>
+                </div>
+            `).join('');
                 resultSection.style.display = 'block';
             } else {
                 alert('查無資料，請確認社群名稱與手機喔！');
