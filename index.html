@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
-<head>
+<head>  
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>妮妮訂單查詢</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -28,9 +29,29 @@
 
     <main class="main-content">
         <section class="hero-carousel">
-            <div class="carousel-placeholder">
-                <i class="far fa-images"></i>
-                <p>左右輪播圖片預留區</p>
+            <div class="swiper">
+                <div class="swiper-wrapper">
+                    <!-- 類型 1：能點擊跳轉的圖片 -->
+                    <div class="swiper-slide">
+                        <a href="https://line.me/R/ti/p/@yourid" target="_blank">
+                            <img src="images/banner/banner_01.jpg" alt="加入LINE群組">
+                        </a>
+                    </div>
+                    <!-- 類型 2：純畫面圖片 -->
+                    <div class="swiper-slide">
+                        <img src="images/banner/banner_02.jpg" alt="新品預告">
+                    </div>
+                    <!-- 類型 2：純畫面圖片 -->
+                    <div class="swiper-slide">
+                        <img src="images/banner/banner_03.jpg" alt="新品預告">
+                    </div>
+                    <!-- 類型 2：純畫面圖片 -->
+                    <div class="swiper-slide">
+                        <img src="images/banner/banner_04.jpg" alt="新品預告">
+                    </div>
+                </div>
+                <!-- 如果需要分頁圓點 -->
+                <div class="swiper-pagination"></div>
             </div>
         </section>
 
@@ -40,11 +61,11 @@
                 <div class="search-form-card">
                     <div class="input-group">
                         <label for="community-name"><i class="fas fa-users"></i> 社群名稱</label>
-                        <input type="text" id="community-name" placeholder="例如：妮妮好物社">
+                        <input type="text" id="community-name" placeholder="請輸入社群名稱">
                     </div>
                     <div class="input-group">
                         <label for="phone-number"><i class="fas fa-mobile-alt"></i> 手機號碼</label>
-                        <input type="tel" id="phone-number" placeholder="請輸入後三碼或完整門號">
+                        <input type="tel" id="phone-number" placeholder="請輸入手機號碼">
                     </div>
                     <button type="button" id="submit-query" class="btn-primary">
                         <i class="fas fa-magic"></i> 開始查詢
@@ -59,31 +80,35 @@
             </div>
         </section>
 
-        <section class="notice-board">
-            <div class="section-title">
-                <span>✦</span> 重要佈告欄
-            </div>
             <div class="notice-list">
-                <div class="notice-item">
-                    <div class="notice-tag">NEW</div>
-                    <div class="notice-body">
-                        <span class="date">2026.04.24</span>
-                        <p>系統維護公告：本週日凌晨會休息一下喔！</p>
+                <section class="notice-board">
+                    <div class="section-title"><span>✦</span> 重要佈告欄</div>
+                    <div id="notice-list" class="notice-list">
+                        <!-- 這裡由 JS 動態生成 -->
                     </div>
-                </div>
-                <div class="notice-item">
-                    <div class="notice-tag">INFO</div>
-                    <div class="notice-body">
-                        <span class="date">2026.04.20</span>
-                        <p>現在支援透過 LINE Notify 接收通知囉～</p>
-                    </div>
-                </div>
+                    <!-- 分頁按鈕 -->
+                    <div id="pagination" class="pagination-container"></div>
+                </section>
             </div>
-        </section>
     </main>
+    <!-- 公告彈窗容器 -->
+    <div id="notice-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">公告標題</h3>
+            </div>
+            <div class="modal-body">
+                <p id="modal-date" class="modal-date"></p>
+                <div id="modal-text" class="modal-text">公告內容</div>
+            </div>
+            <div class="modal-footer">
+                <button id="modal-confirm" class="btn-primary">我知道了</button>
+            </div>
+        </div>
+    </div>
 
     <div id="overlay" class="overlay"></div>
-
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

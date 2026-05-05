@@ -94,19 +94,30 @@ body {
     padding: 0 1.5rem;
 }
 
-/* 輪播區：加上淡色彩 */
+/* 覆蓋原本的 .hero-carousel 樣式 */
 .hero-carousel {
-    background: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
-    height: 250px;
-    border-radius: var(--radius);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    width: 100%;
+    height: auto; /* 讓高度由圖片比例決定 */
     margin-bottom: 2.5rem;
-    color: #bbb;
-    border: 2px solid var(--white);
+    overflow: hidden;
+    border-radius: var(--radius);
     box-shadow: var(--shadow);
+}
+.swiper {
+    width: 100%;
+    height: 100%;
+}
+
+.swiper-slide img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover; /* 確保圖片填滿不變形 */
+}
+
+/* 自定義分頁點顏色 */
+.swiper-pagination-bullet-active {
+    background: var(--primary-color) !important;
 }
 
 /* 查詢框：胖嘟嘟的設計 */
@@ -147,6 +158,7 @@ body {
 
 /* 佈告欄：小卡片感 */
 .notice-board {
+    margin-top: 20px;
     background: var(--white);
     border-radius: var(--radius);
     padding: 2rem;
@@ -201,6 +213,7 @@ body {
 
 /* 查詢表單卡片 */
 .search-form-card {
+    margin-bottom: 25px;
     background: var(--white);
     padding: 2rem;
     border-radius: var(--radius);
@@ -255,3 +268,153 @@ body {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+/* 讓卡片可以相對定位，好讓狀態標籤定在右上角 */
+.order-card {
+    position: relative; /* 必須加這行 */
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px 15px 15px 15px; /* 頂部多留一點空間給狀態 */
+    margin-bottom: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    border: 1px solid #ffe4e8;
+}
+
+/* 類型標籤 (如：扭蛋、JUMP SHOP) */
+.type-tag {
+    background: #ffc0cb; /* 粉紅色標籤 */
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+/* 狀態標籤改到右上角 */
+.status-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.status-badge.status-pending {
+    background: #fff5e6;
+    color: #ff9900;
+}
+
+/* 處理換行問題：保留試算表內的換行格式 */
+.item-name {
+    margin: 15px 0;
+    font-weight: bold;
+    color: var(--text-main);
+    line-height: 1.5;
+    white-space: pre-wrap; /* 💡 關鍵：保留換行且自動折行 */
+}
+
+/* 價格區域與圖示 */
+.price-info {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px dashed #eee;
+    padding-top: 12px;
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+
+.price-item i {
+    margin-right: 4px;
+    color: var(--primary-color);
+}
+
+/* 剩餘金額不為 0 時的醒目樣式 */
+.has-balance {
+    color: #e63946; /* 醒目的紅色 */
+    background: #fff0f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 900;
+}
+
+/* 分頁安鈕 */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.page-btn {
+    border: none;
+    background: #fff;
+    color: var(--primary-color);
+    padding: 8px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: 0.3s;
+}
+
+.page-btn.active {
+    background: var(--primary-color);
+    color: white;
+}
+/* 分頁安鈕 */
+
+/* 彈窗背景遮罩 */
+.modal {
+    display: none; /* 預設隱藏 */
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(255, 154, 158, 0.2);
+    backdrop-filter: blur(8px);
+    z-index: 3000;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 彈窗主體 */
+.modal-content {
+    background: var(--white);
+    width: 90%;
+    max-width: 450px;
+    border-radius: var(--radius);
+    padding: 2rem;
+    box-shadow: 0 15px 35px rgba(255, 154, 158, 0.3);
+    animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalPop {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: center; /* 💡 改成 center 讓標題置中 */
+    align-items: center;
+    margin-bottom: 1rem;
+    border-bottom: 1px dashed #ffe4e6;
+    padding-bottom: 0.5rem;
+}
+
+.modal-header h3 { color: var(--primary-color); }
+
+.modal-close-btn {
+    background: none; border: none;
+    font-size: 1.5rem; color: #ccc; cursor: pointer;
+}
+
+.modal-date { font-size: 0.85rem; color: #aaa; margin-bottom: 1rem; }
+
+.modal-text {
+    line-height: 1.6;
+    white-space: pre-wrap; /* 💡 同樣保留內容換行 */
+    color: var(--text-main);
+}
+
+.modal-footer { margin-top: 2rem; text-align: center; }
