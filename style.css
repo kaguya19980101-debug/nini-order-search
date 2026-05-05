@@ -168,6 +168,14 @@ body {
     transform: translateY(-3px);
     box-shadow: 0 6px 15px rgba(255, 154, 158, 0.4);
 }
+/* 查詢按鈕正在搜尋時的樣式 */
+.btn-primary.loading {
+    background: #cccccc !important; /* 變灰色 */
+    border-color: #bbbbbb !important;
+    color: #711111 !important;
+    cursor: not-allowed; /* 滑鼠變成禁止點擊 */
+    opacity: 0.8;
+}
 
 /* 佈告欄：小卡片感 */
 .notice-board {

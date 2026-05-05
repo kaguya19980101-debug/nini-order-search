@@ -26,22 +26,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-        // 初始化輪播圖
-    const swiper = new Swiper('.swiper', {
-        loop: true,               // 循環播放
-        autoplay: {
-            delay: 3000,          // 3秒切換一次
-            disableOnInteraction: false,
-        },
-        pagination: {
-            el: '.swiper-pagination',
-            clickable: true,
-        },
-    });
+// --- 初始化輪播圖 (加入防呆) ---
+    // 💡 只有當畫面上存在 .swiper 這個元素時，才執行 Swiper 初始化
+    const swiperElement = document.querySelector('.swiper');
+    if (swiperElement) {
+        const swiper = new Swiper('.swiper', {
+            loop: true,
+            autoplay: { delay: 3000, disableOnInteraction: false },
+            pagination: { el: '.swiper-pagination', clickable: true },
+        });
+    }
+    
     // --- 2. 查詢按鈕處理 ---
     const submitBtn = document.getElementById('submit-query');
     if (submitBtn) {
-        submitBtn.addEventListener('click', function() {
+        submitBtn.addEventListener('click', () => {
             const community = document.getElementById('community-name').value.trim();
             const phone = document.getElementById('phone-number').value.trim();
 
@@ -50,29 +49,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const isQueryPage = window.location.pathname.includes('query.html');
-            if (isQueryPage) {
+            // 💡 核心邏輯：判斷現在是在哪一頁
+            // 如果畫面上有 cards-container，代表在查詢頁，直接執行 AJAX
+            if (document.getElementById('cards-container')) {
                 fetchDataFromGAS(community, phone);
-            } else {
+            } 
+            // 如果沒有 cards-container，代表在首頁，執行跳轉並把參數傳過去
+            else {
                 window.location.href = `query.html?community=${encodeURIComponent(community)}&phone=${encodeURIComponent(phone)}`;
             }
         });
     }
-
-    // --- 3. 自動觸發網址參數查詢 ---
-    const urlParams = new URLSearchParams(window.location.search);
-    const communityParam = urlParams.get('community');
-    const phoneParam = urlParams.get('phone');
-
-    if (communityParam && phoneParam) {
-        const communityInput = document.getElementById('community-name');
-        const phoneInput = document.getElementById('phone-number');
-        if (communityInput) communityInput.value = communityParam;
-        if (phoneInput) phoneInput.value = phoneParam;
-        fetchDataFromGAS(communityParam, phoneParam);
-    }
-
-
+    
+    // 💡 加分題：如果是從首頁跳過來的，自動幫他查一次
+    autoQueryOnLoad();
     // 在原本的選單邏輯下方加入這段 布告欄談窗開關
     const confirmBtn = document.getElementById('modal-confirm');
     const modal = document.getElementById('notice-modal');
@@ -87,58 +77,77 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 });
 
+// 自動查詢功能
+function autoQueryOnLoad() {
+    const params = new URLSearchParams(window.location.search);
+    const comm = params.get('community');
+    const phone = params.get('phone');
+    
+    if (comm && phone && document.getElementById('cards-container')) {
+        // 把網址帶過來的參數填入輸入框
+        document.getElementById('community-name').value = comm;
+        document.getElementById('phone-number').value = phone;
+        // 直接啟動查詢
+        fetchDataFromGAS(comm, phone);
+    }
+}
+/**
+ * 通用查詢函式
+ */
 function fetchDataFromGAS(community, phone) {
     const scriptURL = 'https://script.google.com/macros/s/AKfycbzsi7XRN0ZlzP5KX-_5D01Uleb8zBaux1hyAdnTI8yVh6q9NGN6LAx2uHNioVWVIgMe/exec';
     
-    // 💡 修正處：這裡的 ID 必須跟 HTML 的 <div id="cards-container"> 一致
     const container = document.getElementById('cards-container'); 
     const resultSection = document.getElementById('result-section');
     const btn = document.getElementById('submit-query');
 
-    if (btn) btn.innerText = '尋找中...';
+    // 💡 1. 開始查詢：按鈕變灰並禁用 (loading 樣式)
+    if (btn) {
+        btn.classList.add('loading'); // 加上我們剛剛定義的灰色樣式
+        btn.disabled = true;          // 實體禁用，防止重複連點
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 尋找中...'; 
+    }
 
     fetch(`${scriptURL}?community=${encodeURIComponent(community)}&phone=${encodeURIComponent(phone)}`)
         .then(response => response.json())
         .then(data => {
             console.log("收到資料:", data);
+            
+            // 💡 檢查容器是否存在 (防呆)
+            if (!container) return;
+
             if (data.status === 'success' && data.orders && data.orders.length > 0) {
                 const sorted = data.orders.sort((a, b) => b.dateValue - a.dateValue);
                 container.innerHTML = sorted.map(order => {
-                const statusClass = order.status === '已完成' ? 'status-completed' : 'status-pending';
-                
-                // 💡 邏輯判斷：如果 balance 轉換成數字後大於 0，就加上醒目的 class
-                const balanceAmount = parseFloat(order.balance) || 0;
-                const balanceClass = balanceAmount > 0 ? 'has-balance' : '';
+                    const statusClass = order.status === '已完成' ? 'status-completed' : 'status-pending';
+                    const balanceAmount = parseFloat(order.balance) || 0;
+                    const balanceClass = balanceAmount > 0 ? 'has-balance' : '';
 
-                return `
-                    <div class="order-card">
-                        <!-- 狀態標籤現在由 CSS 定位在右上角 -->
-                        <div class="status-badge ${statusClass}">${order.status}</div>
-
-                        <div class="card-header">
-                            <span class="type-tag">${order.type || '一般'}</span>
-                            <span class="order-date">${order.date}</span>
-                        </div>
-
-                        <div class="item-name">${order.item}</div> 
-
-                        <div class="price-info">
-                            <div class="price-item">
-                                <i class="fas fa-tag"></i><span>價格</span>
-                                <strong>$${order.price}</strong>
+                    return `
+                        <div class="order-card">
+                            <div class="status-badge ${statusClass}">${order.status}</div>
+                            <div class="card-header">
+                                <span class="type-tag">${order.type || '一般'}</span>
+                                <span class="order-date">${order.date}</span>
                             </div>
-                            <div class="price-item">
-                                <i class="fas fa-hand-holding-usd"></i><span>已付</span>
-                                <strong>$${order.paid}</strong>
-                            </div>
-                            <div class="price-item">
-                                <i class="fas fa-exclamation-circle"></i><span>剩餘</span>
-                                <strong class="${balanceClass}">$${order.balance}</strong>
+                            <div class="item-name">${order.item}</div> 
+                            <div class="price-info">
+                                <div class="price-item">
+                                    <i class="fas fa-tag"></i><span>價格</span>
+                                    <strong>$${order.price}</strong>
+                                </div>
+                                <div class="price-item">
+                                    <i class="fas fa-hand-holding-usd"></i><span>已付</span>
+                                    <strong>$${order.paid}</strong>
+                                </div>
+                                <div class="price-item">
+                                    <i class="fas fa-exclamation-circle"></i><span>剩餘</span>
+                                    <strong class="${balanceClass}">$${order.balance}</strong>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                `;
-            }).join('');
+                    `;
+                }).join('');
                 if (resultSection) resultSection.style.display = 'block';
             } else {
                 container.innerHTML = '<p style="text-align:center; padding:20px;">找不到您的訂單，請檢查輸入資訊喔！</p>';
@@ -150,7 +159,12 @@ function fetchDataFromGAS(community, phone) {
             if (container) container.innerHTML = '<p style="text-align:center; color:red;">連線失敗，請檢查網路。</p>';
         })
         .finally(() => {
-            if (btn) btn.innerHTML = '<i class="fas fa-magic"></i> 開始查詢';
+            // 💡 2. 結束查詢：恢復按鈕原本樣式
+            if (btn) {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-magic"></i> 開始查詢';
+            }
         });
 }
 
@@ -160,6 +174,9 @@ const rowsPerPage = 7;
 
 // 載入公告資料公告資料公告資料公告資料公告資料公告資料
 function loadNotices() {
+    // 💡 先檢查有沒有公告欄，沒有的話就直接收工
+    if (!document.getElementById('notice-list')) return;
+    
     fetch('notices.json')
         .then(res => res.json())
         .then(data => {
@@ -194,7 +211,6 @@ function displayNotices(page) {
        div.onclick = () => openNoticeModal(item); 
         listElement.appendChild(div);
     });
-
     // 渲染分頁按鈕
     renderPagination(allNotices.length, page);
 }
