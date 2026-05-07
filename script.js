@@ -3,28 +3,38 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- 1. 共用功能：側邊選單控制 ---
-    const menuToggle = document.getElementById('menu-toggle');
-    const menuClose = document.getElementById('menu-close');
-    const sideMenu = document.getElementById('side-menu');
-    const overlay = document.getElementById('overlay');
+    console.log("JS 啟動成功！目前的頁面是：", window.location.pathname);
+// --- 1. 側邊選單通用邏輯 (每一頁都有用) ---
+    const menuToggle = document.getElementById('menu-toggle'); // 三條線按鈕
+    console.log("漢堡鈕物件狀態：", menuToggle); // 如果顯示 null，就是 HTML ID 寫錯了
+    const menuClose = document.getElementById('menu-close');   // 側邊欄內的叉叉
+    const sideMenu = document.getElementById('side-menu');     // 選單容器
+    const overlay = document.getElementById('overlay');       // 霧面背景
 
-    if (menuToggle) {
+    // 打開選單
+    if (menuToggle && sideMenu && overlay) {
         menuToggle.addEventListener('click', () => {
             sideMenu.classList.add('active');
             overlay.classList.add('active');
         });
     }
 
-    const closeActions = [menuClose, overlay];
-    closeActions.forEach(el => {
-        if (el) {
-            el.addEventListener('click', () => {
-                sideMenu.classList.remove('active');
-                overlay.classList.remove('active');
-            });
-        }
-    });
+   // 關閉選單 (寫成一個 function 讓叉叉和霧面背景都能用)
+    const closeMenu = () => {
+        if (sideMenu) sideMenu.classList.remove('active');
+        if (overlay) overlay.classList.remove('active');
+    };
+
+    if (menuClose) menuClose.addEventListener('click', closeMenu);
+    if (overlay) overlay.addEventListener('click', closeMenu);
+
+
+    // --- 2. 只有特定頁面才跑的邏輯 (用 if 防呆) ---
+    
+    // 只有首頁有公告
+    if (document.getElementById('notice-list')) {
+        loadNotices();
+    }
 
 // --- 初始化輪播圖 (加入防呆) ---
     // 💡 只有當畫面上存在 .swiper 這個元素時，才執行 Swiper 初始化
@@ -232,11 +242,7 @@ function renderPagination(totalItems, page) {
     }
 }
 
-// 記得在 DOMContentLoaded 呼叫
-document.addEventListener('DOMContentLoaded', () => {
-    loadNotices();
-    // ... 原本的選單邏輯
-});
+
 /**
  * 彈窗控制功能[cite: 2, 4]
  */

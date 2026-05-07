@@ -15,16 +15,30 @@
         <div class="logo">nini order search</div>
     </header>
 
+    <!-- 側邊選單優化版 -->
     <nav id="side-menu" class="side-menu">
         <div class="menu-header">
-            <h3>Menu</h3>
-            <button id="menu-close" class="close-btn">&times;</button>
+            <h2>MENU</h2>
+            <!-- 💡 漂亮圓形關閉鈕 -->
+            <button id="menu-close" class="close-btn">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
-        <ul>
-            <li><a href="index.html"><i class="fas fa-star"></i> 首頁</a></li>
-            <li><a href="query.html"><i class="fas fa-heart"></i> 訂單查詢</a></li>
-            <li><a href="#"><i class="fas fa-comment-dots"></i> 最新公告</a></li>
+        <ul class="menu-list">
+            <li><a href="index.html"><i class="fas fa-home"></i> 首頁</a></li>
+            <li><a href="query.html"><i class="fas fa-search"></i> 訂單查詢</a></li>
+           <li><a href="shop.html"><i class="fas fa-shopping-bag"></i> 現貨賣場</a></li>
+            <li><a href="about.html" class="active"><i class="fas fa-info-circle"></i> 關於我們</a></li>
         </ul>
+        
+        <!-- 💡 底部聯絡資訊：讓選單不那麼空 -->
+        <div class="menu-footer">
+            <p>有問題嗎？找妮妮</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-line"></i></a>
+                <a href="#"><i class="fab fa-facebook-messenger"></i></a>
+            </div>
+        </div>
     </nav>
 
     <main class="main-content">
