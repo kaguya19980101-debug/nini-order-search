@@ -10,22 +10,9 @@
 <body>
 
     <header class="top-nav">
-        <button id="menu-toggle" class="icon-btn"><i class="fas fa-bars"></i></button>
+        <button class="icon-btn" onclick="history.back()"><i class="fas fa-arrow-left"></i></button>
         <div class="logo">nini order search</div>
     </header>
-
-    <nav id="side-menu" class="side-menu">
-        <div class="menu-header">
-            <h2>MENU</h2>
-            <button id="menu-close" class="close-btn"><i class="fas fa-times"></i></button>
-        </div>
-        <ul class="menu-list">
-            <li><a href="index.html"><i class="fas fa-home"></i> 首頁</a></li>
-            <li><a href="query.html"><i class="fas fa-search"></i> 訂單查詢</a></li>
-            <li><a href="shop.html"><i class="fas fa-shopping-bag"></i> 現貨賣場</a></li>
-            <li><a href="about.html" class="active"><i class="fas fa-info-circle"></i> 關於我們</a></li>
-        </ul>
-    </nav>
 
     <main class="main-content">
         <section class="search-section">
@@ -55,7 +42,6 @@
         </section>
     </main>
 
-    <div id="overlay" class="overlay"></div>
     <script src="script.js"></script>
 </body>
 </html>

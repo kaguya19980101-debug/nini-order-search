@@ -59,15 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // 💡 核心邏輯：判斷現在是在哪一頁
-            // 如果畫面上有 cards-container，代表在查詢頁，直接執行 AJAX
-            if (document.getElementById('cards-container')) {
-                fetchDataFromGAS(community, phone);
-            } 
-            // 如果沒有 cards-container，代表在首頁，執行跳轉並把參數傳過去
-            else {
-                window.location.href = `query.html?community=${encodeURIComponent(community)}&phone=${encodeURIComponent(phone)}`;
-            }
+            window.location.href = `query.html?community=${encodeURIComponent(community)}&phone=${encodeURIComponent(phone)}`;
         });
     }
     
@@ -129,9 +121,18 @@ function fetchDataFromGAS(community, phone) {
             if (data.status === 'success' && data.orders && data.orders.length > 0) {
                 const sorted = data.orders.sort((a, b) => b.dateValue - a.dateValue);
                 container.innerHTML = sorted.map(order => {
-                    const statusClass = order.status === '已完成' ? 'status-completed' : 'status-pending';
+                    const statusMap = {
+                        '已完成': 'status-done',
+                        '已出貨': 'status-shipped',
+                        '已抵台': 'status-arrived',
+                        '運回中': 'status-transit',
+                        '已購入': 'status-bought',
+                        '待採買': 'status-pending',
+                        '已取消': 'status-cancelled',
+                    };
+                    const statusClass = statusMap[order.status] || 'status-pending';
                     const balanceAmount = parseFloat(order.balance) || 0;
-                    const balanceClass = balanceAmount > 0 ? 'has-balance' : '';
+                    const hasBalance = balanceAmount > 0;
 
                     return `
                         <div class="order-card">
@@ -143,16 +144,16 @@ function fetchDataFromGAS(community, phone) {
                             <div class="item-name">${order.item}</div> 
                             <div class="price-info">
                                 <div class="price-item">
-                                    <i class="fas fa-tag"></i><span>價格</span>
+                                    <i class="fas fa-coins"></i><span>價格</span>
                                     <strong>$${order.price}</strong>
                                 </div>
                                 <div class="price-item">
-                                    <i class="fas fa-hand-holding-usd"></i><span>已付</span>
+                                    <i class="fas fa-check-circle"></i><span>已付</span>
                                     <strong>$${order.paid}</strong>
                                 </div>
-                                <div class="price-item">
-                                    <i class="fas fa-exclamation-circle"></i><span>剩餘</span>
-                                    <strong class="${balanceClass}">$${order.balance}</strong>
+                                <div class="price-item ${hasBalance ? 'has-balance-item' : ''}">
+                                    <i class="fas fa-wallet"></i><span>剩餘</span>
+                                    <strong>$${order.balance}</strong>
                                 </div>
                             </div>
                         </div>
