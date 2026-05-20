@@ -136,10 +136,10 @@ function fetchDataFromGAS(community, phone) {
 
                     return `
                         <div class="order-card">
-                            <div class="status-badge ${statusClass}">${order.status}</div>
                             <div class="card-header">
                                 <span class="type-tag">${order.type || '一般'}</span>
                                 <span class="order-date">${order.date}</span>
+                                <span class="status-badge ${statusClass}">${order.status}</span>
                             </div>
                             <div class="item-name">${order.item}</div> 
                             <div class="price-info">
