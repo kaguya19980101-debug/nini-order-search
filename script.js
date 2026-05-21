@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // --- 初始化輪播圖：從 banners.json 讀取 ---
     const swiperElement = document.querySelector('.swiper');
     if (swiperElement) {
-        fetch('data/banners.json')
+        fetch('https://raw.githubusercontent.com/kaguya19980101-debug/nini-data/main/banners.json')
             .then(r => r.json())
             .then(banners => {
                 const wrapper = document.querySelector('.swiper-wrapper');
@@ -211,7 +211,7 @@ function loadNotices() {
     // 💡 先檢查有沒有公告欄，沒有的話就直接收工
     if (!document.getElementById('notice-list')) return;
     
-    fetch('data/notices.json')
+    fetch('https://raw.githubusercontent.com/kaguya19980101-debug/nini-data/main/notices.json')
         .then(res => res.json())
         .then(data => {
             allNotices = data.sort((a, b) => b.id - a.id); // 按 ID 倒序排列
@@ -354,7 +354,7 @@ function initShop() {
     });
 
     // 從 JSON 讀取
-    fetch('data/shop.json')
+    fetch('https://raw.githubusercontent.com/kaguya19980101-debug/nini-data/main/shop.json')
         .then(r => r.json())
         .then(data => {
             allItems = data;

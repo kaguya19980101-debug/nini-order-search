@@ -525,9 +525,15 @@ body{font-family:"微軟正黑體",sans-serif;background:var(--bg);color:var(--t
 
 <script>
 const ADMIN_PASSWORD = 'nini2024';   // ← 改這裡換密碼
-const GITHUB_OWNER  = 'kaguya19980101-debug';
-const GITHUB_REPO   = 'nini-order-search';
-const GITHUB_BRANCH = 'main';
+const GITHUB_OWNER      = 'kaguya19980101-debug';
+const GITHUB_REPO       = 'nini-order-search';  // 網站 repo（HTML/CSS/JS）
+const GITHUB_DATA_REPO  = 'nini-data';           // 資料 repo（JSON）
+const GITHUB_BRANCH     = 'main';
+
+// ── Supabase 圖片儲存設定 ──
+const SUPABASE_URL    = 'https://xjankizlksyxibashxon.supabase.co';
+const SUPABASE_KEY    = 'sb_publishable_0uA_IxbWyoxmI-bfahv2nA_LVa3g_AP';
+const SUPABASE_BUCKET = 'nini-images';
 
 let shopData   = [];
 let bannerData = [];
@@ -585,10 +591,11 @@ function switchTab(name) {
 // ── 讀取資料 ──────────────────────────────────────────
 async function loadAllData() {
     try {
+        const RAW = 'https://raw.githubusercontent.com/kaguya19980101-debug/nini-data/main';
         const [s,b,n] = await Promise.all([
-            fetch('data/shop.json?t='+Date.now()).then(r=>r.json()),
-            fetch('data/banners.json?t='+Date.now()).then(r=>r.json()),
-            fetch('data/notices.json?t='+Date.now()).then(r=>r.json()),
+            fetch(`${RAW}/shop.json`,    { cache:'no-store' }).then(r=>r.json()),
+            fetch(`${RAW}/banners.json`, { cache:'no-store' }).then(r=>r.json()),
+            fetch(`${RAW}/notices.json`, { cache:'no-store' }).then(r=>r.json()),
         ]);
         shopData=s; bannerData=b; noticeData=n;
     } catch(e) { shopData=[]; bannerData=[]; noticeData=[]; }
@@ -681,16 +688,7 @@ function openShopForm(idx) {
     document.getElementById('f-price').value = item.price || '';
     document.getElementById('f-img').value   = item.img   || '';
     document.getElementById('f-url').value   = item.url   || '';
-    // 若已有圖片（編輯模式），直接顯示預覽
-    const shopPreviewImg = document.getElementById('shop-preview-img');
-    const shopPreviewEl  = document.getElementById('shop-img-preview');
-    if (item.img) {
-        shopPreviewImg.src = item.img;
-        shopPreviewEl.style.display = 'block';
-    } else {
-        shopPreviewImg.src = '';
-        shopPreviewEl.style.display = 'none';
-    }
+    document.getElementById('shop-img-preview').style.display = 'none';
     document.getElementById('shop-modal').classList.add('open');
 }
 function closeShopModal() { document.getElementById('shop-modal').classList.remove('open'); }
@@ -704,13 +702,13 @@ async function submitShopForm() {
 
     if (!name||!tag||!price||!urlInput) { alert('請填寫所有必填欄位（*）'); return; }
 
-    // 如果有上傳圖片，先推到 GitHub
+    // 如果有上傳圖片，推到 Supabase
     if (shopUploadedBase64) {
         showSaveBar('上傳圖片中…');
-        const filename = `images/shop/shop_${Date.now()}.jpg`;
-        const ok = await pushFileToGitHub(filename, shopUploadedBase64.split(',')[1]);
-        if (!ok) { showSaveBar('圖片上傳失敗', 'error'); return; }
-        imgSrc = filename;
+        const filename = `shop/shop_${Date.now()}.jpg`;
+        const url = await uploadToSupabase(filename, shopUploadedBase64);
+        if (!url) { showSaveBar('圖片上傳失敗', 'error'); return; }
+        imgSrc = url;
     }
     if (!imgSrc) { alert('請上傳圖片或填入圖片網址'); return; }
 
@@ -739,16 +737,7 @@ function openBannerForm(idx) {
     document.getElementById('b-alt').value = b.alt || '';
     document.getElementById('b-img').value = b.img || '';
     document.getElementById('b-url').value = b.url || '';
-    // 若已有圖片（編輯模式），直接顯示預覽
-    const bannerPreviewImg = document.getElementById('banner-preview-img');
-    const bannerPreviewEl  = document.getElementById('banner-img-preview');
-    if (b.img) {
-        bannerPreviewImg.src = b.img;
-        bannerPreviewEl.style.display = 'block';
-    } else {
-        bannerPreviewImg.src = '';
-        bannerPreviewEl.style.display = 'none';
-    }
+    document.getElementById('banner-img-preview').style.display = 'none';
     document.getElementById('banner-modal').classList.add('open');
 }
 function closeBannerModal() { document.getElementById('banner-modal').classList.remove('open'); }
@@ -759,10 +748,10 @@ async function submitBannerForm() {
 
     if (bannerUploadedBase64) {
         showSaveBar('上傳圖片中…');
-        const filename = `images/banner/banner_${Date.now()}.jpg`;
-        const ok = await pushFileToGitHub(filename, bannerUploadedBase64.split(',')[1]);
-        if (!ok) { showSaveBar('圖片上傳失敗', 'error'); return; }
-        imgSrc = filename;
+        const filename = `banner/banner_${Date.now()}.jpg`;
+        const url = await uploadToSupabase(filename, bannerUploadedBase64);
+        if (!url) { showSaveBar('圖片上傳失敗', 'error'); return; }
+        imgSrc = url;
     }
     if (!imgSrc) { alert('請上傳圖片或填入圖片網址'); return; }
 
@@ -988,6 +977,37 @@ function confirmCrop() {
     closeCropModal();
 }
 
+// ── Supabase 圖片上傳 ──────────────────────────────────
+async function uploadToSupabase(filename, base64Data) {
+    try {
+        // base64 轉 Blob
+        const base64 = base64Data.includes(',') ? base64Data.split(',')[1] : base64Data;
+        const byteChars = atob(base64);
+        const byteArr = new Uint8Array(byteChars.length);
+        for (let i = 0; i < byteChars.length; i++) byteArr[i] = byteChars.charCodeAt(i);
+        const blob = new Blob([byteArr], { type: 'image/jpeg' });
+
+        const res = await fetch(
+            `${SUPABASE_URL}/storage/v1/object/${SUPABASE_BUCKET}/${filename}`,
+            {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${SUPABASE_KEY}`,
+                    'Content-Type': 'image/jpeg',
+                    'x-upsert': 'true'
+                },
+                body: blob
+            }
+        );
+        if (!res.ok) { console.error('Supabase 上傳失敗', await res.text()); return null; }
+        // 回傳公開 URL
+        return `${SUPABASE_URL}/storage/v1/object/public/${SUPABASE_BUCKET}/${filename}`;
+    } catch(e) {
+        console.error('uploadToSupabase error', e);
+        return null;
+    }
+}
+
 // ── GitHub API ─────────────────────────────────────────
 async function pushFileToGitHub(path, base64Content) {
     const token = getToken();
@@ -1010,7 +1030,7 @@ async function pushFileToGitHub(path, base64Content) {
 async function pushJsonToGitHub(path, data, message) {
     const token = getToken();
     if (!token) { showSaveBar('請先設定 GitHub Token', 'error'); return false; }
-    const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`;
+    const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_DATA_REPO}/contents/${path}`;
     let sha = '';
     try {
         const r = await fetch(apiUrl, { headers:{ Authorization:'token '+token } });
@@ -1028,17 +1048,17 @@ async function pushJsonToGitHub(path, data, message) {
 
 async function saveShopData() {
     showSaveBar('發布中…');
-    const ok = await pushJsonToGitHub('data/shop.json', shopData, '✏️ 更新商品資料');
+    const ok = await pushJsonToGitHub('shop.json', shopData, '✏️ 更新商品資料');
     showSaveBar(ok ? '商品已發布！' : '發布失敗，請確認 Token', ok ? 'success' : 'error');
 }
 async function saveBannerData() {
     showSaveBar('發布中…');
-    const ok = await pushJsonToGitHub('data/banners.json', bannerData, '🖼️ 更新輪播圖');
+    const ok = await pushJsonToGitHub('banners.json', bannerData, '🖼️ 更新輪播圖');
     showSaveBar(ok ? '輪播圖已發布！' : '發布失敗，請確認 Token', ok ? 'success' : 'error');
 }
 async function saveNoticeData() {
     showSaveBar('發布中…');
-    const ok = await pushJsonToGitHub('data/notices.json', noticeData, '📢 更新公告');
+    const ok = await pushJsonToGitHub('notices.json', noticeData, '📢 更新公告');
     showSaveBar(ok ? '公告已發布！' : '發布失敗，請確認 Token', ok ? 'success' : 'error');
 }
 
@@ -1051,30 +1071,6 @@ function showSaveBar(msg, type='') {
     clearTimeout(sbTimer);
     sbTimer = setTimeout(() => el.classList.remove('show'), 3000);
 }
-
-// ── 網址欄即時預覽 ─────────────────────────────────────
-document.getElementById('f-img').addEventListener('input', function() {
-    const v = this.value.trim();
-    const previewEl  = document.getElementById('shop-img-preview');
-    const previewImg = document.getElementById('shop-preview-img');
-    if (v) {
-        previewImg.src = v;
-        previewEl.style.display = 'block';
-    } else if (!shopUploadedBase64) {
-        previewEl.style.display = 'none';
-    }
-});
-document.getElementById('b-img').addEventListener('input', function() {
-    const v = this.value.trim();
-    const previewEl  = document.getElementById('banner-img-preview');
-    const previewImg = document.getElementById('banner-preview-img');
-    if (v) {
-        previewImg.src = v;
-        previewEl.style.display = 'block';
-    } else if (!bannerUploadedBase64) {
-        previewEl.style.display = 'none';
-    }
-});
 
 // 點空白關 modal
 ['shop-modal','banner-modal','notice-modal-admin'].forEach(id => {
