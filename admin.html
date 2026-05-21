@@ -879,7 +879,9 @@ cropBoxEl.addEventListener('mousedown', startDrag);
 cropBoxEl.addEventListener('touchstart', e => startDrag(e.touches[0]), { passive:false });
 
 document.addEventListener('mousemove', onDrag);
-document.addEventListener('touchmove', e => { if(dragState) { e.preventDefault(); onDrag(e.touches[0]); } }, { passive:false });
+document.addEventListener('touchmove', e => {
+    if(dragState) { e.preventDefault(); onDrag(e.touches[0]); }
+}, { passive:true });
 document.addEventListener('mouseup', endDrag);
 document.addEventListener('touchend', endDrag);
 
