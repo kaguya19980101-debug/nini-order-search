@@ -43,15 +43,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const shopModal = document.getElementById('shop-modal');
     if (shopModal) shopModal.addEventListener('click', e => { if (e.target === shopModal) closeShopModal(); });
 
-// --- 初始化輪播圖 (加入防呆) ---
-    // 💡 只有當畫面上存在 .swiper 這個元素時，才執行 Swiper 初始化
+// --- 初始化輪播圖：從 banners.json 讀取 ---
     const swiperElement = document.querySelector('.swiper');
     if (swiperElement) {
-        const swiper = new Swiper('.swiper', {
-            loop: true,
-            autoplay: { delay: 3000, disableOnInteraction: false },
-            pagination: { el: '.swiper-pagination', clickable: true },
-        });
+        fetch('data/banners.json')
+            .then(r => r.json())
+            .then(banners => {
+                const wrapper = document.querySelector('.swiper-wrapper');
+                wrapper.innerHTML = banners.map(b => `
+                    <div class="swiper-slide">
+                        ${b.clickable && b.url
+                            ? `<a href="${b.url}" target="_blank"><img src="${b.img}" alt="${b.alt}"></a>`
+                            : `<img src="${b.img}" alt="${b.alt}">`
+                        }
+                    </div>
+                `).join('');
+                new Swiper('.swiper', {
+                    loop: true,
+                    autoplay: { delay: 3000, disableOnInteraction: false },
+                    pagination: { el: '.swiper-pagination', clickable: true },
+                });
+            })
+            .catch(() => {
+                // 讀取失敗時 swiper 保持空白，不影響其他功能
+            });
     }
     
     // --- 2. 查詢按鈕處理 ---
@@ -283,46 +298,17 @@ function closeNoticeModal() {
  *   price: 價格文字 (e.g. '$120'),
  *   img:   圖片路徑或 URL,
  *   url:   賣場連結,
- * }
- */
-const SHOP_ITEMS = [
-    {
-        id: 1,
-        name: '範例商品 A',
-        tag: '扭蛋',
-        desc: '日系扭蛋，隨機款式，品項齊全。',
-        price: '$120',
-        img: 'images/shop/item_01.jpg',
-        url: 'https://shopee.tw',
-    },
-    {
-        id: 2,
-        name: '範例商品 B',
-        tag: '週邊',
-        desc: '動漫限定週邊，數量有限。',
-        price: '$350',
-        img: 'images/shop/item_02.jpg',
-        url: 'https://shopee.tw',
-    },
-    {
-        id: 3,
-        name: '範例商品 C',
-        tag: '生活',
-        desc: '質感生活小物，送禮自用兩相宜。',
-        price: '$280',
-        img: 'images/shop/item_03.jpg',
-        url: 'https://shopee.tw',
-    },
-];
-
+ **/ 
 function initShop() {
     if (!document.getElementById('shop-grid')) return;
 
-    const grid    = document.getElementById('shop-grid');
-    const empty   = document.getElementById('shop-empty');
-    const countEl = document.getElementById('shop-count');
+    const grid       = document.getElementById('shop-grid');
+    const empty      = document.getElementById('shop-empty');
+    const countEl    = document.getElementById('shop-count');
     const searchInput = document.getElementById('shop-search');
     const clearBtn    = document.getElementById('shop-clear');
+
+    let allItems = [];
 
     function renderItems(items) {
         grid.innerHTML = '';
@@ -352,7 +338,7 @@ function initShop() {
     function filter() {
         const q = searchInput.value.trim().toLowerCase();
         clearBtn.style.display = q ? 'flex' : 'none';
-        const filtered = SHOP_ITEMS.filter(i =>
+        const filtered = allItems.filter(i =>
             i.name.toLowerCase().includes(q) ||
             i.tag.toLowerCase().includes(q) ||
             i.desc.toLowerCase().includes(q)
@@ -364,10 +350,20 @@ function initShop() {
     clearBtn.addEventListener('click', () => {
         searchInput.value = '';
         clearBtn.style.display = 'none';
-        renderItems(SHOP_ITEMS);
+        renderItems(allItems);
     });
 
-    renderItems(SHOP_ITEMS);
+    // 從 JSON 讀取
+    fetch('data/shop.json')
+        .then(r => r.json())
+        .then(data => {
+            allItems = data;
+            renderItems(allItems);
+        })
+        .catch(() => {
+            empty.style.display = 'flex';
+            countEl.textContent = '';
+        });
 }
 
 function openShopModal(item) {
