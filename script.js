@@ -211,7 +211,7 @@ function loadNotices() {
     // 💡 先檢查有沒有公告欄，沒有的話就直接收工
     if (!document.getElementById('notice-list')) return;
     
-    fetch('notices.json')
+    fetch('data/notices.json')
         .then(res => res.json())
         .then(data => {
             allNotices = data.sort((a, b) => b.id - a.id); // 按 ID 倒序排列
@@ -298,7 +298,7 @@ function closeNoticeModal() {
  *   price: 價格文字 (e.g. '$120'),
  *   img:   圖片路徑或 URL,
  *   url:   賣場連結,
- **/ 
+ **/
 function initShop() {
     if (!document.getElementById('shop-grid')) return;
 

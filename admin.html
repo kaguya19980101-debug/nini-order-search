@@ -1,209 +1,325 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>妮妮後台管理</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #4a9edd;
-            --primary-dark: #2f7fc1;
-            --primary-soft: #e8f4fd;
-            --accent: #ff7f6b;
-            --border: #cde8f8;
-            --text-main: #2d3e50;
-            --text-sub: #7a92a8;
-            --white: #ffffff;
-            --bg: #f4f9fd;
-            --radius: 14px;
-            --shadow: 0 4px 16px rgba(74,158,221,0.12);
-            --danger: #e53e3e;
-            --success: #38a169;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: "微軟正黑體", sans-serif; background: var(--bg); color: var(--text-main); min-height: 100vh; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>妮妮後台管理</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+:root {
+    --primary:#4a9edd; --primary-dark:#2f7fc1; --primary-soft:#e8f4fd;
+    --accent:#ff7f6b;  --accent-soft:#fff1ee;
+    --border:#cde8f8;  --text-main:#2d3e50; --text-sub:#7a92a8;
+    --white:#fff;      --bg:#f4f9fd;
+    --radius:14px;     --shadow:0 4px 16px rgba(74,158,221,.12);
+    --danger:#e53e3e;  --success:#38a169;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"微軟正黑體",sans-serif;background:var(--bg);color:var(--text-main);min-height:100vh;}
 
-        /* ── 登入畫面 ── */
-        #login-screen {
-            display: flex; align-items: center; justify-content: center;
-            min-height: 100vh; padding: 2rem;
-        }
-        .login-box {
-            background: var(--white); border-radius: 20px;
-            padding: 2.5rem; width: 100%; max-width: 380px;
-            box-shadow: var(--shadow);
-        }
-        .login-box h2 { color: var(--primary); margin-bottom: 0.3rem; font-size: 1.4rem; }
-        .login-box p  { color: var(--text-sub); font-size: 0.85rem; margin-bottom: 2rem; }
-        .login-box label { display: block; font-size: 0.85rem; color: var(--primary); font-weight: 700; margin-bottom: 0.4rem; }
-        .login-box input {
-            width: 100%; padding: 10px 14px; border-radius: 10px;
-            border: 1.5px solid var(--border); outline: none; font-size: 1rem;
-            margin-bottom: 1rem; transition: 0.2s;
-        }
-        .login-box input:focus { border-color: var(--primary); }
-        .login-error { color: var(--danger); font-size: 0.82rem; margin-bottom: 0.8rem; display: none; }
+/* ── 登入 ── */
+#login-screen{
+    display:flex;align-items:center;justify-content:center;
+    min-height:100vh;padding:2rem;position:relative;overflow:hidden;
+}
+/* 登入頁藝術背景 */
+#login-screen::before{
+    content:'';position:absolute;inset:0;
+    background:
+        radial-gradient(circle at 15% 20%, rgba(74,158,221,.15) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(255,127,107,.12) 0%, transparent 40%),
+        radial-gradient(circle at 70% 10%, rgba(126,200,227,.1) 0%, transparent 30%);
+    pointer-events:none;
+}
+.login-deco{position:absolute;pointer-events:none;opacity:.06;}
+.login-deco-1{top:-60px;left:-60px;width:300px;height:300px;border-radius:50%;background:var(--primary);}
+.login-deco-2{bottom:-80px;right:-80px;width:350px;height:350px;border-radius:50%;background:var(--accent);}
+.login-deco-3{top:40%;left:5%;width:80px;height:80px;border-radius:50%;background:var(--accent);}
+.login-deco-4{top:20%;right:8%;width:50px;height:50px;border-radius:50%;background:var(--primary);}
 
-        /* ── 主後台 ── */
-        #admin-screen { display: none; }
+.login-box{
+    background:rgba(255,255,255,.92);backdrop-filter:blur(12px);
+    border-radius:24px;padding:2.8rem;width:100%;max-width:380px;
+    box-shadow:0 20px 60px rgba(74,158,221,.18);position:relative;z-index:1;
+    border:1px solid rgba(255,255,255,.8);
+}
+.login-logo{text-align:center;margin-bottom:1.8rem;}
+.login-logo .logo-text{font-size:1.6rem;font-weight:900;color:var(--primary);}
+.login-logo .logo-text span{color:var(--accent);}
+.login-logo p{font-size:.82rem;color:var(--text-sub);margin-top:.3rem;}
+.login-box label{display:block;font-size:.82rem;color:var(--primary);font-weight:700;margin-bottom:.4rem;}
+.login-box input{
+    width:100%;padding:11px 14px;border-radius:10px;
+    border:1.5px solid var(--border);outline:none;font-size:1rem;
+    margin-bottom:1rem;transition:.2s;
+}
+.login-box input:focus{border-color:var(--primary);}
+.login-error{color:var(--danger);font-size:.82rem;margin-bottom:.8rem;display:none;}
 
-        .admin-header {
-            background: var(--white); border-bottom: 2px solid var(--border);
-            padding: 0.9rem 1.5rem; display: flex; align-items: center;
-            justify-content: space-between; position: sticky; top: 0; z-index: 100;
-        }
-        .admin-header .logo { font-size: 1.1rem; font-weight: 900; color: var(--primary); }
-        .admin-header .logo span { color: var(--accent); }
-        .admin-header-right { display: flex; align-items: center; gap: 12px; }
-        .token-status { font-size: 0.78rem; color: var(--text-sub); }
-        .token-status.ok { color: var(--success); }
+/* ── 主後台 ── */
+#admin-screen{display:none;}
 
-        .admin-main { max-width: 900px; margin: 1.5rem auto; padding: 0 1.2rem 3rem; }
+.admin-header{
+    background:var(--white);border-bottom:2px solid var(--border);
+    padding:.9rem 1.5rem;display:flex;align-items:center;
+    justify-content:space-between;position:sticky;top:0;z-index:100;
+}
+.admin-header .logo-text{font-size:1.1rem;font-weight:900;color:var(--primary);}
+.admin-header .logo-text span{color:var(--accent);}
+/* header 右側小裝飾 */
+.header-deco{display:flex;gap:6px;align-items:center;}
+.header-dot{width:8px;height:8px;border-radius:50%;}
+.header-dot:nth-child(1){background:#ff7f6b;}
+.header-dot:nth-child(2){background:#f0b429;}
+.header-dot:nth-child(3){background:#38c172;}
 
-        /* ── Tab ── */
-        .tabs { display: flex; gap: 8px; margin-bottom: 1.5rem; }
-        .tab-btn {
-            padding: 8px 20px; border-radius: 20px; border: 1.5px solid var(--border);
-            background: var(--white); color: var(--text-sub); font-size: 0.88rem;
-            cursor: pointer; transition: 0.2s; font-weight: 600;
-        }
-        .tab-btn.active { background: var(--primary); border-color: var(--primary); color: white; }
+.admin-header-right{display:flex;align-items:center;gap:12px;}
+.token-status{font-size:.78rem;color:var(--text-sub);}
+.token-status.ok{color:var(--success);}
 
-        .tab-panel { display: none; }
-        .tab-panel.active { display: block; }
+.admin-main{max-width:920px;margin:1.5rem auto;padding:0 1.2rem 4rem;}
 
-        /* ── 卡片區 ── */
-        .panel-header {
-            display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 1rem;
-        }
-        .panel-header h3 { font-size: 1rem; color: var(--text-main); }
+/* ── Token ── */
+.token-section{
+    background:var(--white);border-radius:var(--radius);
+    padding:1.2rem 1.4rem;margin-bottom:1.5rem;
+    border:1px solid var(--border);box-shadow:var(--shadow);
+    position:relative;overflow:hidden;
+}
+.token-section::after{
+    content:'';position:absolute;right:-20px;top:-20px;
+    width:100px;height:100px;border-radius:50%;
+    background:radial-gradient(circle,rgba(74,158,221,.08),transparent 70%);
+    pointer-events:none;
+}
+.token-section h4{font-size:.9rem;color:var(--primary);margin-bottom:.8rem;}
+.token-row{display:flex;gap:8px;}
+.token-row input{
+    flex:1;padding:8px 12px;border-radius:8px;
+    border:1.5px solid var(--border);outline:none;font-size:.85rem;
+}
+.token-row input:focus{border-color:var(--primary);}
+.token-hint{font-size:.75rem;color:var(--text-sub);margin-top:6px;line-height:1.5;}
+.token-hint a{color:var(--primary);}
 
-        /* ── Token 設定區 ── */
-        .token-section {
-            background: var(--white); border-radius: var(--radius);
-            padding: 1.2rem 1.4rem; margin-bottom: 1.5rem;
-            border: 1px solid var(--border); box-shadow: var(--shadow);
-        }
-        .token-section h4 { font-size: 0.9rem; color: var(--primary); margin-bottom: 0.8rem; }
-        .token-row { display: flex; gap: 8px; }
-        .token-row input {
-            flex: 1; padding: 8px 12px; border-radius: 8px;
-            border: 1.5px solid var(--border); outline: none; font-size: 0.85rem;
-        }
-        .token-row input:focus { border-color: var(--primary); }
-        .token-hint { font-size: 0.75rem; color: var(--text-sub); margin-top: 6px; line-height: 1.5; }
-        .token-hint a { color: var(--primary); }
+/* ── Tabs ── */
+.tabs{display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap;}
+.tab-btn{
+    padding:8px 18px;border-radius:20px;border:1.5px solid var(--border);
+    background:var(--white);color:var(--text-sub);font-size:.85rem;
+    cursor:pointer;transition:.2s;font-weight:600;
+}
+.tab-btn.active{background:var(--primary);border-color:var(--primary);color:white;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
 
-        /* ── 表格列表 ── */
-        .item-list { display: flex; flex-direction: column; gap: 10px; }
-        .item-row {
-            background: var(--white); border-radius: var(--radius);
-            border: 1px solid var(--border); padding: 14px 16px;
-            display: flex; align-items: center; gap: 12px;
-            box-shadow: var(--shadow);
-        }
-        .item-row-img {
-            width: 56px; height: 56px; border-radius: 8px;
-            object-fit: cover; background: var(--primary-soft); flex-shrink: 0;
-        }
-        .item-row-info { flex: 1; min-width: 0; }
-        .item-row-name { font-weight: 700; font-size: 0.92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .item-row-sub  { font-size: 0.78rem; color: var(--text-sub); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .item-row-actions { display: flex; gap: 6px; flex-shrink: 0; }
+/* ── 面板 ── */
+.panel-header{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:1rem;
+}
+.panel-header h3{font-size:1rem;color:var(--text-main);font-weight:700;}
 
-        /* ── 輪播列表 ── */
-        .banner-row {
-            background: var(--white); border-radius: var(--radius);
-            border: 1px solid var(--border); padding: 12px 16px;
-            display: flex; align-items: center; gap: 12px;
-            box-shadow: var(--shadow);
-        }
-        .banner-row-img {
-            width: 90px; height: 50px; border-radius: 6px;
-            object-fit: cover; background: var(--primary-soft); flex-shrink: 0;
-        }
-        .banner-row-info { flex: 1; min-width: 0; }
-        .banner-row-alt  { font-weight: 600; font-size: 0.88rem; }
-        .banner-row-url  { font-size: 0.75rem; color: var(--text-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* ── 清單 ── */
+.item-list{display:flex;flex-direction:column;gap:10px;}
+.item-row{
+    background:var(--white);border-radius:var(--radius);
+    border:1px solid var(--border);padding:12px 14px;
+    display:flex;align-items:center;gap:12px;
+    box-shadow:var(--shadow);transition:.15s;
+}
+.item-row:hover{border-color:var(--primary);}
+.item-row-img{
+    width:54px;height:54px;border-radius:8px;
+    object-fit:cover;background:var(--primary-soft);flex-shrink:0;
+}
+.banner-thumb{width:90px;height:50px;border-radius:6px;}
+.item-row-info{flex:1;min-width:0;}
+.item-row-name{font-weight:700;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.item-row-sub{font-size:.75rem;color:var(--text-sub);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.item-row-actions{display:flex;gap:5px;flex-shrink:0;}
 
-        /* ── 按鈕 ── */
-        .btn { padding: 7px 16px; border-radius: 20px; border: none; cursor: pointer; font-size: 0.82rem; font-weight: 700; transition: 0.2s; }
-        .btn-primary-sm { background: var(--primary); color: white; }
-        .btn-primary-sm:hover { background: var(--primary-dark); }
-        .btn-danger  { background: #fff5f5; color: var(--danger); border: 1px solid #fecaca; }
-        .btn-danger:hover  { background: var(--danger); color: white; }
-        .btn-edit    { background: var(--primary-soft); color: var(--primary); border: 1px solid var(--border); }
-        .btn-edit:hover { background: var(--primary); color: white; }
-        .btn-success { background: var(--success); color: white; }
-        .btn-success:hover { opacity: 0.88; }
-        .btn-outline { background: white; color: var(--primary); border: 1.5px solid var(--primary); }
-        .btn-outline:hover { background: var(--primary); color: white; }
+/* 公告 tag */
+.notice-row-tag{
+    font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:8px;
+    white-space:nowrap;flex-shrink:0;
+}
+.ntag-NEW {background:#fff1ee;color:#e05c3a;border:1px solid #ffbfaf;}
+.ntag-INFO{background:var(--primary-soft);color:var(--primary-dark);border:1px solid var(--border);}
+.ntag-SALE{background:#fefce8;color:#a16207;border:1px solid #fde047;}
 
-        /* ── Modal 表單 ── */
-        .form-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(42,90,140,0.18); backdrop-filter: blur(6px);
-            z-index: 3000; align-items: center; justify-content: center; padding: 1rem;
-        }
-        .form-modal.open { display: flex; }
-        .form-box {
-            background: var(--white); border-radius: 20px; padding: 1.8rem;
-            width: 100%; max-width: 480px; box-shadow: 0 16px 40px rgba(74,158,221,0.2);
-            animation: popIn 0.25s cubic-bezier(0.175,0.885,0.32,1.275);
-            max-height: 90vh; overflow-y: auto;
-        }
-        @keyframes popIn { from { transform: scale(0.88); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .form-box h3 { color: var(--primary); margin-bottom: 1.2rem; font-size: 1rem; }
-        .form-group { margin-bottom: 1rem; }
-        .form-group label { display: block; font-size: 0.82rem; color: var(--primary); font-weight: 700; margin-bottom: 0.35rem; }
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%; padding: 9px 12px; border-radius: 10px;
-            border: 1.5px solid var(--border); outline: none; font-size: 0.92rem;
-            font-family: inherit; transition: 0.2s;
-        }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); }
-        .form-group textarea { resize: vertical; min-height: 70px; }
-        .form-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.2rem; }
-        .form-hint { font-size: 0.75rem; color: var(--text-sub); margin-top: 4px; }
+/* ── 按鈕 ── */
+.btn{padding:7px 14px;border-radius:20px;border:none;cursor:pointer;font-size:.8rem;font-weight:700;transition:.2s;display:inline-flex;align-items:center;gap:5px;}
+.btn-primary-sm{background:var(--primary);color:white;}
+.btn-primary-sm:hover{background:var(--primary-dark);}
+.btn-danger{background:#fff5f5;color:var(--danger);border:1px solid #fecaca;}
+.btn-danger:hover{background:var(--danger);color:white;}
+.btn-edit{background:var(--primary-soft);color:var(--primary);border:1px solid var(--border);}
+.btn-edit:hover{background:var(--primary);color:white;}
+.btn-success{background:var(--success);color:white;}
+.btn-success:hover{opacity:.88;}
+.btn-outline{background:white;color:var(--primary);border:1.5px solid var(--primary);}
+.btn-outline:hover{background:var(--primary);color:white;}
+.btn-icon{padding:6px 10px;}
 
-        /* ── 儲存狀態 ── */
-        .save-bar {
-            position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
-            background: var(--text-main); color: white; padding: 10px 24px;
-            border-radius: 40px; font-size: 0.88rem; font-weight: 600;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.15); z-index: 5000;
-            opacity: 0; transition: opacity 0.3s; pointer-events: none;
-        }
-        .save-bar.show { opacity: 1; }
-        .save-bar.success { background: var(--success); }
-        .save-bar.error   { background: var(--danger); }
+/* ── Form Modal ── */
+.form-modal{
+    display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+    background:rgba(42,90,140,.2);backdrop-filter:blur(6px);
+    z-index:3000;align-items:center;justify-content:center;padding:1rem;
+}
+.form-modal.open{display:flex;}
+.form-box{
+    background:var(--white);border-radius:20px;padding:1.8rem;
+    width:100%;max-width:500px;
+    box-shadow:0 20px 50px rgba(74,158,221,.2);
+    animation:popIn .25s cubic-bezier(.175,.885,.32,1.275);
+    max-height:92vh;overflow-y:auto;
+}
+@keyframes popIn{from{transform:scale(.88);opacity:0;}to{transform:scale(1);opacity:1;}}
+.form-box h3{color:var(--primary);margin-bottom:1.2rem;font-size:1rem;}
+.form-group{margin-bottom:1rem;}
+.form-group label{display:block;font-size:.8rem;color:var(--primary);font-weight:700;margin-bottom:.35rem;}
+.form-group input,.form-group select,.form-group textarea{
+    width:100%;padding:9px 12px;border-radius:10px;
+    border:1.5px solid var(--border);outline:none;font-size:.92rem;
+    font-family:inherit;transition:.2s;
+}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--primary);}
+.form-group textarea{resize:vertical;min-height:72px;}
+.form-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:1.2rem;}
+.form-hint{font-size:.72rem;color:var(--text-sub);margin-top:4px;}
 
-        @media (max-width: 480px) {
-            .item-row { flex-wrap: wrap; }
-            .item-row-actions { width: 100%; justify-content: flex-end; }
-        }
-    </style>
+/* ── 圖片上傳區 ── */
+.upload-zone{
+    border:2px dashed var(--border);border-radius:12px;
+    padding:1.5rem;text-align:center;cursor:pointer;
+    transition:.2s;background:var(--primary-soft);
+    position:relative;
+}
+.upload-zone:hover{border-color:var(--primary);background:#daeef8;}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+.upload-zone i{font-size:1.8rem;color:var(--primary);opacity:.5;margin-bottom:.5rem;}
+.upload-zone p{font-size:.82rem;color:var(--text-sub);}
+.upload-zone .size-hint{font-size:.72rem;color:var(--accent);margin-top:.2rem;font-weight:600;}
+
+.upload-preview{
+    margin-top:.8rem;border-radius:10px;overflow:hidden;
+    position:relative;display:none;
+}
+.upload-preview img{width:100%;display:block;border-radius:10px;}
+.upload-preview .re-upload{
+    position:absolute;bottom:8px;right:8px;
+    background:rgba(0,0,0,.55);color:white;border:none;
+    border-radius:20px;padding:5px 12px;font-size:.75rem;cursor:pointer;
+}
+
+/* ── 裁切 Modal ── */
+#crop-modal{
+    display:none;position:fixed;inset:0;
+    background:rgba(0,0,0,.85);z-index:9000;
+    flex-direction:column;align-items:center;justify-content:center;
+    padding:1rem;gap:1rem;
+}
+#crop-modal.open{display:flex;}
+#crop-modal h3{color:white;font-size:1rem;}
+#crop-container{
+    position:relative;background:#111;
+    overflow:hidden;cursor:crosshair;
+    border-radius:8px;touch-action:none;
+    max-width:min(90vw,600px);
+    max-height:60vh;
+}
+#crop-img{display:block;max-width:100%;max-height:60vh;user-select:none;pointer-events:none;}
+#crop-box{
+    position:absolute;border:2px solid white;
+    box-shadow:0 0 0 9999px rgba(0,0,0,.55);
+    cursor:move;
+}
+/* 裁切框四角把手 */
+.crop-handle{
+    position:absolute;width:12px;height:12px;background:white;border-radius:2px;
+}
+.crop-handle.nw{top:-5px;left:-5px;cursor:nw-resize;}
+.crop-handle.ne{top:-5px;right:-5px;cursor:ne-resize;}
+.crop-handle.sw{bottom:-5px;left:-5px;cursor:sw-resize;}
+.crop-handle.se{bottom:-5px;right:-5px;cursor:se-resize;}
+
+.crop-actions{display:flex;gap:10px;}
+.crop-ratio-hint{color:rgba(255,255,255,.6);font-size:.78rem;}
+#crop-result-preview{
+    margin-top:.5rem;border-radius:8px;overflow:hidden;
+    display:none;border:2px solid rgba(255,255,255,.2);
+}
+#crop-result-preview img{display:block;width:160px;height:auto;}
+
+/* ── 儲存列 ── */
+.save-bar{
+    position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);
+    background:var(--text-main);color:white;padding:10px 24px;
+    border-radius:40px;font-size:.88rem;font-weight:600;
+    box-shadow:0 4px 16px rgba(0,0,0,.15);z-index:5000;
+    opacity:0;transition:opacity .3s;pointer-events:none;
+}
+.save-bar.show{opacity:1;}
+.save-bar.success{background:var(--success);}
+.save-bar.error{background:var(--danger);}
+
+/* 空狀態裝飾 */
+.empty-state{
+    text-align:center;padding:3rem 1rem;color:var(--text-sub);
+}
+.empty-state svg{margin-bottom:1rem;opacity:.3;}
+.empty-state p{font-size:.9rem;}
+
+@media(max-width:480px){
+    .item-row{flex-wrap:wrap;}
+    .item-row-actions{width:100%;justify-content:flex-end;}
+    .form-box{padding:1.4rem;}
+}
+</style>
 </head>
 <body>
 
-<!-- 登入畫面 -->
+<!-- 登入頁裝飾 -->
 <div id="login-screen">
+    <div class="login-deco login-deco-1"></div>
+    <div class="login-deco login-deco-2"></div>
+    <div class="login-deco login-deco-3"></div>
+    <div class="login-deco login-deco-4"></div>
     <div class="login-box">
-        <h2>🔐 妮妮後台</h2>
-        <p>請輸入管理員密碼登入</p>
+        <div class="login-logo">
+            <!-- SVG 小插圖 -->
+            <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:.6rem">
+                <circle cx="28" cy="28" r="28" fill="#e8f4fd"/>
+                <path d="M18 22c0-2.2 1.8-4 4-4h12c2.2 0 4 1.8 4 4v14l-4-3-4 3-4-3-4 3V22z" fill="#4a9edd" opacity=".9"/>
+                <rect x="22" y="26" width="12" height="1.5" rx=".75" fill="white"/>
+                <rect x="22" y="29.5" width="8" height="1.5" rx=".75" fill="white" opacity=".6"/>
+            </svg>
+            <div class="logo-text">nini <span>admin</span></div>
+            <p>後台管理系統</p>
+        </div>
         <label>密碼</label>
-        <input type="password" id="login-pwd" placeholder="輸入密碼" onkeydown="if(event.key==='Enter')doLogin()">
+        <input type="password" id="login-pwd" placeholder="輸入管理員密碼"
+               onkeydown="if(event.key==='Enter')doLogin()">
         <div class="login-error" id="login-error">密碼錯誤，請再試一次</div>
-        <button class="btn btn-primary-sm" style="width:100%;padding:10px;" onclick="doLogin()">登入</button>
+        <button class="btn btn-primary-sm" style="width:100%;padding:11px;font-size:.95rem;" onclick="doLogin()">
+            <i class="fas fa-unlock-alt"></i> 登入
+        </button>
     </div>
 </div>
 
 <!-- 主後台 -->
 <div id="admin-screen">
     <header class="admin-header">
-        <div class="logo">nini <span>admin</span></div>
+        <div style="display:flex;align-items:center;gap:12px;">
+            <div class="header-deco">
+                <div class="header-dot"></div>
+                <div class="header-dot"></div>
+                <div class="header-dot"></div>
+            </div>
+            <div class="logo-text">nini <span>admin</span></div>
+        </div>
         <div class="admin-header-right">
             <span class="token-status" id="token-status">Token 未設定</span>
             <button class="btn btn-outline" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> 登出</button>
@@ -212,7 +328,7 @@
 
     <div class="admin-main">
 
-        <!-- Token 設定 -->
+        <!-- Token -->
         <div class="token-section">
             <h4><i class="fas fa-key"></i> GitHub Token 設定</h4>
             <div class="token-row">
@@ -222,7 +338,7 @@
             </div>
             <p class="token-hint">
                 Token 只存在你的瀏覽器，不會上傳。需要有 <strong>repo</strong> 權限。<br>
-                取得方式：<a href="https://github.com/settings/tokens/new" target="_blank">GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)</a>，勾選 <strong>repo</strong>。
+                取得：<a href="https://github.com/settings/tokens/new" target="_blank">GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)</a>，勾選 <strong>repo</strong>。
             </p>
         </div>
 
@@ -230,6 +346,7 @@
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('shop')"><i class="fas fa-shopping-bag"></i> 現貨商品</button>
             <button class="tab-btn" onclick="switchTab('banner')"><i class="fas fa-images"></i> 輪播圖</button>
+            <button class="tab-btn" onclick="switchTab('notice')"><i class="fas fa-bullhorn"></i> 公告佈告欄</button>
         </div>
 
         <!-- 商品 Tab -->
@@ -256,10 +373,22 @@
             </div>
         </div>
 
+        <!-- 公告 Tab -->
+        <div class="tab-panel" id="tab-notice">
+            <div class="panel-header">
+                <h3>公告列表</h3>
+                <button class="btn btn-primary-sm" onclick="openNoticeForm()"><i class="fas fa-plus"></i> 新增公告</button>
+            </div>
+            <div class="item-list" id="notice-list-admin"></div>
+            <div style="margin-top:1.2rem;text-align:right;">
+                <button class="btn btn-success" onclick="saveNoticeData()"><i class="fas fa-cloud-upload-alt"></i> 儲存並發布</button>
+            </div>
+        </div>
+
     </div>
 </div>
 
-<!-- 商品表單 Modal -->
+<!-- ── 商品表單 Modal ── -->
 <div class="form-modal" id="shop-modal">
     <div class="form-box">
         <h3 id="shop-form-title">新增商品</h3>
@@ -281,9 +410,19 @@
             <input type="text" id="f-price" placeholder="例：$120">
         </div>
         <div class="form-group">
-            <label>圖片網址 *</label>
-            <input type="text" id="f-img" placeholder="https://... 或 images/shop/xxx.jpg">
-            <p class="form-hint">建議使用圖床（如 Imgur）或放在 repo 的 images/shop/ 資料夾</p>
+            <label>商品圖片 *<span style="color:var(--text-sub);font-weight:400;font-size:.72rem;margin-left:6px;">建議 1:1，上傳後可裁切</span></label>
+            <div class="upload-zone" id="shop-upload-zone" onclick="document.getElementById('shop-img-file').click()">
+                <input type="file" id="shop-img-file" accept="image/*" style="display:none" onchange="handleImageSelect(this,'shop')">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>點擊或拖曳上傳圖片</p>
+                <p class="size-hint">商品圖：800 × 800 px（1:1）</p>
+            </div>
+            <div class="upload-preview" id="shop-img-preview">
+                <img id="shop-preview-img" src="" alt="">
+                <button class="re-upload" onclick="document.getElementById('shop-img-file').click()"><i class="fas fa-sync-alt"></i> 重新上傳</button>
+            </div>
+            <p class="form-hint" style="margin-top:6px;">或直接貼網址：</p>
+            <input type="text" id="f-img" placeholder="https://... 留空則使用上傳的圖片" style="margin-top:4px;">
         </div>
         <div class="form-group">
             <label>賣場連結 *</label>
@@ -296,7 +435,7 @@
     </div>
 </div>
 
-<!-- 輪播表單 Modal -->
+<!-- ── 輪播表單 Modal ── -->
 <div class="form-modal" id="banner-modal">
     <div class="form-box">
         <h3 id="banner-form-title">新增輪播圖</h3>
@@ -306,13 +445,24 @@
             <input type="text" id="b-alt" placeholder="例：新品預告">
         </div>
         <div class="form-group">
-            <label>圖片網址 *</label>
-            <input type="text" id="b-img" placeholder="https://... 或 images/banner/xxx.jpg">
+            <label>輪播圖片 *<span style="color:var(--text-sub);font-weight:400;font-size:.72rem;margin-left:6px;">建議 16:9，上傳後可裁切</span></label>
+            <div class="upload-zone" id="banner-upload-zone" onclick="document.getElementById('banner-img-file').click()">
+                <input type="file" id="banner-img-file" accept="image/*" style="display:none" onchange="handleImageSelect(this,'banner')">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>點擊或拖曳上傳圖片</p>
+                <p class="size-hint">輪播圖：1200 × 675 px（16:9）</p>
+            </div>
+            <div class="upload-preview" id="banner-img-preview">
+                <img id="banner-preview-img" src="" alt="">
+                <button class="re-upload" onclick="document.getElementById('banner-img-file').click()"><i class="fas fa-sync-alt"></i> 重新上傳</button>
+            </div>
+            <p class="form-hint" style="margin-top:6px;">或直接貼網址：</p>
+            <input type="text" id="b-img" placeholder="https://... 留空則使用上傳的圖片" style="margin-top:4px;">
         </div>
         <div class="form-group">
             <label>點擊連結（可不填）</label>
             <input type="text" id="b-url" placeholder="https://...">
-            <p class="form-hint">填了才會可以點擊，不填就是純展示圖</p>
+            <p class="form-hint">填了才可點擊，不填就是純展示圖</p>
         </div>
         <div class="form-footer">
             <button class="btn btn-outline" onclick="closeBannerModal()">取消</button>
@@ -321,44 +471,90 @@
     </div>
 </div>
 
-<!-- 儲存狀態列 -->
+<!-- ── 公告表單 Modal ── -->
+<div class="form-modal" id="notice-modal-admin">
+    <div class="form-box">
+        <h3 id="notice-form-title">新增公告</h3>
+        <input type="hidden" id="notice-edit-id">
+        <div class="form-group">
+            <label>標籤類型 *</label>
+            <select id="n-tag">
+                <option value="NEW">NEW（新消息）</option>
+                <option value="INFO">INFO（一般公告）</option>
+                <option value="SALE">SALE（優惠活動）</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>標題 *</label>
+            <input type="text" id="n-title" placeholder="公告標題">
+        </div>
+        <div class="form-group">
+            <label>內容 *</label>
+            <textarea id="n-content" placeholder="公告詳細內容" style="min-height:100px;"></textarea>
+        </div>
+        <div class="form-group">
+            <label>日期</label>
+            <input type="date" id="n-date">
+        </div>
+        <div class="form-footer">
+            <button class="btn btn-outline" onclick="closeNoticeModal()">取消</button>
+            <button class="btn btn-primary-sm" onclick="submitNoticeForm()">確認</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── 裁切 Modal ── -->
+<div id="crop-modal">
+    <h3 id="crop-title">裁切圖片</h3>
+    <div id="crop-container">
+        <img id="crop-img" src="" alt="">
+        <div id="crop-box">
+            <div class="crop-handle nw" data-dir="nw"></div>
+            <div class="crop-handle ne" data-dir="ne"></div>
+            <div class="crop-handle sw" data-dir="sw"></div>
+            <div class="crop-handle se" data-dir="se"></div>
+        </div>
+    </div>
+    <div class="crop-actions">
+        <button class="btn btn-outline" onclick="closeCropModal()" style="background:transparent;color:white;border-color:rgba(255,255,255,.4);">取消</button>
+        <button class="btn btn-success" onclick="confirmCrop()"><i class="fas fa-crop-alt"></i> 確認裁切</button>
+    </div>
+</div>
+
 <div class="save-bar" id="save-bar"></div>
 
 <script>
-const ADMIN_PASSWORD = 'nini2024';  // ← 改這裡換密碼
-const GITHUB_OWNER   = 'kaguya19980101-debug';
-const GITHUB_REPO    = 'nini-order-search';
-const GITHUB_BRANCH  = 'main';
+const ADMIN_PASSWORD = 'nini2024';   // ← 改這裡換密碼
+const GITHUB_OWNER  = 'kaguya19980101-debug';
+const GITHUB_REPO   = 'nini-order-search';
+const GITHUB_BRANCH = 'main';
 
 let shopData   = [];
 let bannerData = [];
+let noticeData = [];
 
-// ── 登入 ──
+// ── 登入 ──────────────────────────────────────────────
 function doLogin() {
-    const pwd = document.getElementById('login-pwd').value;
-    if (pwd === ADMIN_PASSWORD) {
+    if (document.getElementById('login-pwd').value === ADMIN_PASSWORD) {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('admin-screen').style.display = 'block';
-        loadToken();
-        loadAllData();
+        loadToken(); loadAllData();
     } else {
         document.getElementById('login-error').style.display = 'block';
     }
 }
-
 function doLogout() {
     document.getElementById('admin-screen').style.display = 'none';
     document.getElementById('login-screen').style.display = 'flex';
     document.getElementById('login-pwd').value = '';
 }
 
-// ── Token ──
+// ── Token ─────────────────────────────────────────────
 function saveToken() {
     const t = document.getElementById('github-token').value.trim();
     if (!t) return;
     localStorage.setItem('nini_gh_token', t);
-    updateTokenStatus();
-    showSaveBar('Token 已儲存', 'success');
+    updateTokenStatus(); showSaveBar('Token 已儲存', 'success');
 }
 function clearToken() {
     localStorage.removeItem('nini_gh_token');
@@ -378,194 +574,472 @@ function updateTokenStatus() {
 }
 function getToken() { return localStorage.getItem('nini_gh_token') || ''; }
 
-// ── Tab ──
+// ── Tab ───────────────────────────────────────────────
 function switchTab(name) {
-    document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', ['shop','banner'][i] === name));
+    const names = ['shop','banner','notice'];
+    document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', names[i] === name));
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
     document.getElementById('tab-' + name).classList.add('active');
 }
 
-// ── 讀取資料 ──
+// ── 讀取資料 ──────────────────────────────────────────
 async function loadAllData() {
     try {
-        const [s, b] = await Promise.all([
-            fetch('data/shop.json?t=' + Date.now()).then(r => r.json()),
-            fetch('data/banners.json?t=' + Date.now()).then(r => r.json()),
+        const [s,b,n] = await Promise.all([
+            fetch('data/shop.json?t='+Date.now()).then(r=>r.json()),
+            fetch('data/banners.json?t='+Date.now()).then(r=>r.json()),
+            fetch('data/notices.json?t='+Date.now()).then(r=>r.json()),
         ]);
-        shopData   = s;
-        bannerData = b;
-    } catch(e) {
-        shopData   = [];
-        bannerData = [];
-    }
-    renderShopList();
-    renderBannerList();
+        shopData=s; bannerData=b; noticeData=n;
+    } catch(e) { shopData=[]; bannerData=[]; noticeData=[]; }
+    renderShopList(); renderBannerList(); renderNoticeList();
 }
 
-// ── 商品列表渲染 ──
+// ── 商品列表 ──────────────────────────────────────────
 function renderShopList() {
     const el = document.getElementById('shop-list');
-    if (!shopData.length) { el.innerHTML = '<p style="color:var(--text-sub);font-size:0.88rem;padding:1rem 0;">尚無商品</p>'; return; }
-    el.innerHTML = shopData.map((item, idx) => `
+    if (!shopData.length) { el.innerHTML = emptyState('暫無商品，點上方按鈕新增'); return; }
+    el.innerHTML = shopData.map((item,idx) => `
         <div class="item-row">
             <img class="item-row-img" src="${item.img}" onerror="this.src=''" alt="">
             <div class="item-row-info">
                 <div class="item-row-name">${item.name}</div>
-                <div class="item-row-sub">${item.tag} · ${item.price} · <a href="${item.url}" target="_blank" style="color:var(--primary)">賣場連結</a></div>
+                <div class="item-row-sub">${item.tag} · ${item.price} · <a href="${item.url}" target="_blank" style="color:var(--primary)">賣場連結 ↗</a></div>
             </div>
             <div class="item-row-actions">
-                ${idx > 0 ? `<button class="btn btn-edit" onclick="moveShop(${idx},-1)"><i class="fas fa-arrow-up"></i></button>` : ''}
-                ${idx < shopData.length-1 ? `<button class="btn btn-edit" onclick="moveShop(${idx},1)"><i class="fas fa-arrow-down"></i></button>` : ''}
-                <button class="btn btn-edit" onclick="openShopForm(${idx})"><i class="fas fa-pen"></i></button>
-                <button class="btn btn-danger" onclick="deleteShop(${idx})"><i class="fas fa-trash"></i></button>
+                ${idx>0?`<button class="btn btn-edit btn-icon" onclick="moveShop(${idx},-1)"><i class="fas fa-arrow-up"></i></button>`:''}
+                ${idx<shopData.length-1?`<button class="btn btn-edit btn-icon" onclick="moveShop(${idx},1)"><i class="fas fa-arrow-down"></i></button>`:''}
+                <button class="btn btn-edit btn-icon" onclick="openShopForm(${idx})"><i class="fas fa-pen"></i></button>
+                <button class="btn btn-danger btn-icon" onclick="deleteShop(${idx})"><i class="fas fa-trash"></i></button>
             </div>
-        </div>
-    `).join('');
+        </div>`).join('');
 }
 
-// ── 輪播列表渲染 ──
+// ── 輪播列表 ──────────────────────────────────────────
 function renderBannerList() {
     const el = document.getElementById('banner-list');
-    if (!bannerData.length) { el.innerHTML = '<p style="color:var(--text-sub);font-size:0.88rem;padding:1rem 0;">尚無輪播圖</p>'; return; }
-    el.innerHTML = bannerData.map((b, idx) => `
-        <div class="banner-row">
-            <img class="banner-row-img" src="${b.img}" onerror="this.src=''" alt="">
-            <div class="banner-row-info">
-                <div class="banner-row-alt">${b.alt || '（無說明）'}</div>
-                <div class="banner-row-url">${b.url || '純展示，無連結'}</div>
+    if (!bannerData.length) { el.innerHTML = emptyState('暫無輪播圖，點上方按鈕新增'); return; }
+    el.innerHTML = bannerData.map((b,idx) => `
+        <div class="item-row">
+            <img class="item-row-img banner-thumb" src="${b.img}" onerror="this.src=''" alt="">
+            <div class="item-row-info">
+                <div class="item-row-name">${b.alt||'（無說明）'}</div>
+                <div class="item-row-sub">${b.url||'純展示，無連結'}</div>
             </div>
             <div class="item-row-actions">
-                ${idx > 0 ? `<button class="btn btn-edit" onclick="moveBanner(${idx},-1)"><i class="fas fa-arrow-up"></i></button>` : ''}
-                ${idx < bannerData.length-1 ? `<button class="btn btn-edit" onclick="moveBanner(${idx},1)"><i class="fas fa-arrow-down"></i></button>` : ''}
-                <button class="btn btn-edit" onclick="openBannerForm(${idx})"><i class="fas fa-pen"></i></button>
-                <button class="btn btn-danger" onclick="deleteBanner(${idx})"><i class="fas fa-trash"></i></button>
+                ${idx>0?`<button class="btn btn-edit btn-icon" onclick="moveBanner(${idx},-1)"><i class="fas fa-arrow-up"></i></button>`:''}
+                ${idx<bannerData.length-1?`<button class="btn btn-edit btn-icon" onclick="moveBanner(${idx},1)"><i class="fas fa-arrow-down"></i></button>`:''}
+                <button class="btn btn-edit btn-icon" onclick="openBannerForm(${idx})"><i class="fas fa-pen"></i></button>
+                <button class="btn btn-danger btn-icon" onclick="deleteBanner(${idx})"><i class="fas fa-trash"></i></button>
             </div>
-        </div>
-    `).join('');
+        </div>`).join('');
 }
 
-// ── 商品 CRUD ──
+// ── 公告列表 ──────────────────────────────────────────
+function renderNoticeList() {
+    const el = document.getElementById('notice-list-admin');
+    if (!noticeData.length) { el.innerHTML = emptyState('暫無公告，點上方按鈕新增'); return; }
+    const sorted = [...noticeData].sort((a,b) => b.id - a.id);
+    el.innerHTML = sorted.map((item) => {
+        const idx = noticeData.indexOf(item);
+        return `
+        <div class="item-row">
+            <span class="notice-row-tag ntag-${item.tag}">${item.tag}</span>
+            <div class="item-row-info">
+                <div class="item-row-name">${item.title}</div>
+                <div class="item-row-sub">${item.date}</div>
+            </div>
+            <div class="item-row-actions">
+                <button class="btn btn-edit btn-icon" onclick="openNoticeForm(${idx})"><i class="fas fa-pen"></i></button>
+                <button class="btn btn-danger btn-icon" onclick="deleteNotice(${idx})"><i class="fas fa-trash"></i></button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function emptyState(msg) {
+    return `<div class="empty-state">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+            <circle cx="32" cy="32" r="28" fill="#e8f4fd"/>
+            <path d="M22 26h20v16a2 2 0 01-2 2H24a2 2 0 01-2-2V26z" fill="#4a9edd" opacity=".3"/>
+            <rect x="26" y="20" width="12" height="8" rx="2" fill="#4a9edd" opacity=".5"/>
+        </svg>
+        <p>${msg}</p>
+    </div>`;
+}
+
+// ── 商品 CRUD ──────────────────────────────────────────
+let shopUploadedBase64 = '';
 function openShopForm(idx) {
-    const modal = document.getElementById('shop-modal');
-    document.getElementById('shop-form-title').textContent = idx !== undefined ? '編輯商品' : '新增商品';
-    document.getElementById('shop-edit-id').value = idx !== undefined ? idx : '';
-    const item = idx !== undefined ? shopData[idx] : {};
+    shopUploadedBase64 = '';
+    document.getElementById('shop-form-title').textContent = idx!==undefined ? '編輯商品' : '新增商品';
+    document.getElementById('shop-edit-id').value = idx!==undefined ? idx : '';
+    const item = idx!==undefined ? shopData[idx] : {};
     document.getElementById('f-name').value  = item.name  || '';
     document.getElementById('f-tag').value   = item.tag   || '';
     document.getElementById('f-desc').value  = item.desc  || '';
     document.getElementById('f-price').value = item.price || '';
     document.getElementById('f-img').value   = item.img   || '';
     document.getElementById('f-url').value   = item.url   || '';
-    modal.classList.add('open');
+    document.getElementById('shop-img-preview').style.display = 'none';
+    document.getElementById('shop-modal').classList.add('open');
 }
 function closeShopModal() { document.getElementById('shop-modal').classList.remove('open'); }
-function submitShopForm() {
+
+async function submitShopForm() {
     const name  = document.getElementById('f-name').value.trim();
     const tag   = document.getElementById('f-tag').value.trim();
     const price = document.getElementById('f-price').value.trim();
-    const img   = document.getElementById('f-img').value.trim();
-    const url   = document.getElementById('f-url').value.trim();
-    if (!name || !tag || !price || !img || !url) { alert('請填寫所有必填欄位（*）'); return; }
-    const item = { id: Date.now(), name, tag, desc: document.getElementById('f-desc').value.trim(), price, img, url };
+    const urlInput = document.getElementById('f-url').value.trim();
+    let imgSrc = document.getElementById('f-img').value.trim();
+
+    if (!name||!tag||!price||!urlInput) { alert('請填寫所有必填欄位（*）'); return; }
+
+    // 如果有上傳圖片，先推到 GitHub
+    if (shopUploadedBase64) {
+        showSaveBar('上傳圖片中…');
+        const filename = `images/shop/shop_${Date.now()}.jpg`;
+        const ok = await pushFileToGitHub(filename, shopUploadedBase64.split(',')[1]);
+        if (!ok) { showSaveBar('圖片上傳失敗', 'error'); return; }
+        imgSrc = filename;
+    }
+    if (!imgSrc) { alert('請上傳圖片或填入圖片網址'); return; }
+
+    const item = { id: Date.now(), name, tag, desc: document.getElementById('f-desc').value.trim(), price, img: imgSrc, url: urlInput };
     const editId = document.getElementById('shop-edit-id').value;
-    if (editId !== '') shopData[parseInt(editId)] = item;
+    if (editId!=='') shopData[parseInt(editId)] = item;
     else shopData.push(item);
-    renderShopList();
-    closeShopModal();
+    renderShopList(); closeShopModal();
 }
 function deleteShop(idx) {
     if (!confirm(`確定刪除「${shopData[idx].name}」？`)) return;
-    shopData.splice(idx, 1);
-    renderShopList();
+    shopData.splice(idx,1); renderShopList();
 }
-function moveShop(idx, dir) {
-    const tmp = shopData[idx]; shopData[idx] = shopData[idx+dir]; shopData[idx+dir] = tmp;
+function moveShop(idx,dir) {
+    [shopData[idx],shopData[idx+dir]] = [shopData[idx+dir],shopData[idx]];
     renderShopList();
 }
 
-// ── 輪播 CRUD ──
+// ── 輪播 CRUD ──────────────────────────────────────────
+let bannerUploadedBase64 = '';
 function openBannerForm(idx) {
-    const modal = document.getElementById('banner-modal');
-    document.getElementById('banner-form-title').textContent = idx !== undefined ? '編輯輪播圖' : '新增輪播圖';
-    document.getElementById('banner-edit-id').value = idx !== undefined ? idx : '';
-    const b = idx !== undefined ? bannerData[idx] : {};
+    bannerUploadedBase64 = '';
+    document.getElementById('banner-form-title').textContent = idx!==undefined ? '編輯輪播圖' : '新增輪播圖';
+    document.getElementById('banner-edit-id').value = idx!==undefined ? idx : '';
+    const b = idx!==undefined ? bannerData[idx] : {};
     document.getElementById('b-alt').value = b.alt || '';
     document.getElementById('b-img').value = b.img || '';
     document.getElementById('b-url').value = b.url || '';
-    modal.classList.add('open');
+    document.getElementById('banner-img-preview').style.display = 'none';
+    document.getElementById('banner-modal').classList.add('open');
 }
 function closeBannerModal() { document.getElementById('banner-modal').classList.remove('open'); }
-function submitBannerForm() {
-    const img = document.getElementById('b-img').value.trim();
-    if (!img) { alert('請填寫圖片網址'); return; }
-    const url = document.getElementById('b-url').value.trim();
-    const item = { id: Date.now(), img, alt: document.getElementById('b-alt').value.trim(), url, clickable: !!url };
+
+async function submitBannerForm() {
+    const urlInput = document.getElementById('b-url').value.trim();
+    let imgSrc = document.getElementById('b-img').value.trim();
+
+    if (bannerUploadedBase64) {
+        showSaveBar('上傳圖片中…');
+        const filename = `images/banner/banner_${Date.now()}.jpg`;
+        const ok = await pushFileToGitHub(filename, bannerUploadedBase64.split(',')[1]);
+        if (!ok) { showSaveBar('圖片上傳失敗', 'error'); return; }
+        imgSrc = filename;
+    }
+    if (!imgSrc) { alert('請上傳圖片或填入圖片網址'); return; }
+
+    const item = { id:Date.now(), img:imgSrc, alt:document.getElementById('b-alt').value.trim(), url:urlInput, clickable:!!urlInput };
     const editId = document.getElementById('banner-edit-id').value;
-    if (editId !== '') bannerData[parseInt(editId)] = item;
+    if (editId!=='') bannerData[parseInt(editId)] = item;
     else bannerData.push(item);
-    renderBannerList();
-    closeBannerModal();
+    renderBannerList(); closeBannerModal();
 }
 function deleteBanner(idx) {
     if (!confirm('確定刪除此輪播圖？')) return;
-    bannerData.splice(idx, 1);
-    renderBannerList();
+    bannerData.splice(idx,1); renderBannerList();
 }
-function moveBanner(idx, dir) {
-    const tmp = bannerData[idx]; bannerData[idx] = bannerData[idx+dir]; bannerData[idx+dir] = tmp;
+function moveBanner(idx,dir) {
+    [bannerData[idx],bannerData[idx+dir]] = [bannerData[idx+dir],bannerData[idx]];
     renderBannerList();
 }
 
-// ── 發布到 GitHub ──
-async function pushToGitHub(path, content, message) {
+// ── 公告 CRUD ──────────────────────────────────────────
+function openNoticeForm(idx) {
+    document.getElementById('notice-form-title').textContent = idx!==undefined ? '編輯公告' : '新增公告';
+    document.getElementById('notice-edit-id').value = idx!==undefined ? idx : '';
+    const item = idx!==undefined ? noticeData[idx] : {};
+    document.getElementById('n-tag').value     = item.tag     || 'INFO';
+    document.getElementById('n-title').value   = item.title   || '';
+    document.getElementById('n-content').value = item.content || '';
+    document.getElementById('n-date').value    = item.date ? item.date.replace(/\./g,'-') : new Date().toISOString().slice(0,10);
+    document.getElementById('notice-modal-admin').classList.add('open');
+}
+function closeNoticeModal() { document.getElementById('notice-modal-admin').classList.remove('open'); }
+function submitNoticeForm() {
+    const title = document.getElementById('n-title').value.trim();
+    const content = document.getElementById('n-content').value.trim();
+    if (!title||!content) { alert('請填寫標題和內容'); return; }
+    const rawDate = document.getElementById('n-date').value;
+    const date = rawDate.replace(/-/g,'.');
+    const item = {
+        id: Date.now(),
+        tag: document.getElementById('n-tag').value,
+        title, content, date
+    };
+    const editId = document.getElementById('notice-edit-id').value;
+    if (editId!=='') noticeData[parseInt(editId)] = item;
+    else noticeData.push(item);
+    renderNoticeList(); closeNoticeModal();
+}
+function deleteNotice(idx) {
+    if (!confirm(`確定刪除「${noticeData[idx].title}」？`)) return;
+    noticeData.splice(idx,1); renderNoticeList();
+}
+
+// ── 圖片上傳與裁切 ────────────────────────────────────
+let cropTarget = ''; // 'shop' | 'banner'
+let cropRatio  = 1;
+let cropImgNaturalW = 0, cropImgNaturalH = 0;
+let cropDisplayW = 0, cropDisplayH = 0;
+// 裁切框狀態
+let cropBox = { x:0, y:0, w:0, h:0 };
+let dragState = null; // { type:'move'|handle, startX, startY, startBox }
+
+function handleImageSelect(input, target) {
+    const file = input.files[0];
+    if (!file) return;
+    cropTarget = target;
+    cropRatio  = target === 'shop' ? 1 : 16/9;
+    const reader = new FileReader();
+    reader.onload = e => openCropModal(e.target.result);
+    reader.readAsDataURL(file);
+}
+
+function openCropModal(src) {
+    document.getElementById('crop-title').textContent =
+        cropTarget === 'shop' ? '裁切商品圖（1:1）' : '裁切輪播圖（16:9）';
+    const img = document.getElementById('crop-img');
+    img.onload = () => initCropBox();
+    img.src = src;
+    document.getElementById('crop-modal').classList.add('open');
+}
+
+function initCropBox() {
+    const img = document.getElementById('crop-img');
+    const container = document.getElementById('crop-container');
+    cropDisplayW = img.offsetWidth;
+    cropDisplayH = img.offsetHeight;
+    cropImgNaturalW = img.naturalWidth;
+    cropImgNaturalH = img.naturalHeight;
+
+    // 初始裁切框：盡量填滿，維持比例
+    let w, h;
+    if (cropDisplayW / cropDisplayH > cropRatio) {
+        h = cropDisplayH * 0.9;
+        w = h * cropRatio;
+    } else {
+        w = cropDisplayW * 0.9;
+        h = w / cropRatio;
+    }
+    cropBox = {
+        x: (cropDisplayW - w) / 2,
+        y: (cropDisplayH - h) / 2,
+        w, h
+    };
+    updateCropBoxDOM();
+}
+
+function updateCropBoxDOM() {
+    const el = document.getElementById('crop-box');
+    el.style.left   = cropBox.x + 'px';
+    el.style.top    = cropBox.y + 'px';
+    el.style.width  = cropBox.w + 'px';
+    el.style.height = cropBox.h + 'px';
+}
+
+// 滑鼠/觸控事件
+const cropBoxEl = document.getElementById('crop-box');
+
+function getCropContainerRect() {
+    return document.getElementById('crop-container').getBoundingClientRect();
+}
+function clientToContainer(clientX, clientY) {
+    const r = getCropContainerRect();
+    return { x: clientX - r.left, y: clientY - r.top };
+}
+
+cropBoxEl.addEventListener('mousedown', startDrag);
+cropBoxEl.addEventListener('touchstart', e => startDrag(e.touches[0]), { passive:false });
+
+document.addEventListener('mousemove', onDrag);
+document.addEventListener('touchmove', e => { if(dragState) { e.preventDefault(); onDrag(e.touches[0]); } }, { passive:false });
+document.addEventListener('mouseup', endDrag);
+document.addEventListener('touchend', endDrag);
+
+function startDrag(e) {
+    const handle = e.target.closest('.crop-handle');
+    const pos = clientToContainer(e.clientX, e.clientY);
+    dragState = {
+        type: handle ? handle.dataset.dir : 'move',
+        startX: pos.x, startY: pos.y,
+        startBox: { ...cropBox }
+    };
+    e.stopPropagation();
+}
+
+function onDrag(e) {
+    if (!dragState) return;
+    const pos = clientToContainer(e.clientX, e.clientY);
+    const dx = pos.x - dragState.startX;
+    const dy = pos.y - dragState.startY;
+    const sb = dragState.startBox;
+    let { x, y, w, h } = sb;
+
+    if (dragState.type === 'move') {
+        x = sb.x + dx;
+        y = sb.y + dy;
+    } else {
+        // 拖拉角落，以 dx 為主，維持固定比例
+        const dir = dragState.type;
+        if (dir === 'se') {
+            w = Math.max(40, sb.w + dx);
+            h = w / cropRatio;
+        } else if (dir === 'sw') {
+            w = Math.max(40, sb.w - dx);
+            h = w / cropRatio;
+            x = sb.x + sb.w - w;
+        } else if (dir === 'ne') {
+            w = Math.max(40, sb.w + dx);
+            h = w / cropRatio;
+            y = sb.y + sb.h - h;
+        } else if (dir === 'nw') {
+            w = Math.max(40, sb.w - dx);
+            h = w / cropRatio;
+            x = sb.x + sb.w - w;
+            y = sb.y + sb.h - h;
+        }
+    }
+
+    // 邊界限制
+    x = Math.max(0, Math.min(x, cropDisplayW - w));
+    y = Math.max(0, Math.min(y, cropDisplayH - h));
+    if (x + w > cropDisplayW) w = cropDisplayW - x;
+    if (y + h > cropDisplayH) h = cropDisplayH - y;
+
+    cropBox = { x, y, w, h };
+    updateCropBoxDOM();
+}
+
+function endDrag() { dragState = null; }
+
+function closeCropModal() {
+    document.getElementById('crop-modal').classList.remove('open');
+}
+
+function confirmCrop() {
+    const img = document.getElementById('crop-img');
+    const scaleX = cropImgNaturalW / cropDisplayW;
+    const scaleY = cropImgNaturalH / cropDisplayH;
+
+    const sx = cropBox.x * scaleX;
+    const sy = cropBox.y * scaleY;
+    const sw = cropBox.w * scaleX;
+    const sh = cropBox.h * scaleY;
+
+    // 輸出尺寸
+    const outW = cropTarget === 'shop' ? 800 : 1200;
+    const outH = cropTarget === 'shop' ? 800 : 675;
+
+    const canvas = document.createElement('canvas');
+    canvas.width  = outW;
+    canvas.height = outH;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, outW, outH);
+
+    const base64 = canvas.toDataURL('image/jpeg', 0.88);
+
+    if (cropTarget === 'shop') {
+        shopUploadedBase64 = base64;
+        document.getElementById('shop-preview-img').src = base64;
+        document.getElementById('shop-img-preview').style.display = 'block';
+    } else {
+        bannerUploadedBase64 = base64;
+        document.getElementById('banner-preview-img').src = base64;
+        document.getElementById('banner-img-preview').style.display = 'block';
+    }
+    closeCropModal();
+}
+
+// ── GitHub API ─────────────────────────────────────────
+async function pushFileToGitHub(path, base64Content) {
     const token = getToken();
     if (!token) { showSaveBar('請先設定 GitHub Token', 'error'); return false; }
-
     const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`;
-
-    // 先取得現有檔案的 SHA（更新需要）
     let sha = '';
     try {
-        const res = await fetch(apiUrl, { headers: { Authorization: 'token ' + token } });
-        if (res.ok) { const d = await res.json(); sha = d.sha; }
-    } catch(e) {}
-
-    const body = { message, content: btoa(unescape(encodeURIComponent(content))), branch: GITHUB_BRANCH };
+        const r = await fetch(apiUrl, { headers:{ Authorization:'token '+token } });
+        if (r.ok) sha = (await r.json()).sha;
+    } catch(e){}
+    const body = { message:`⬆️ 上傳圖片 ${path}`, content:base64Content, branch:GITHUB_BRANCH };
     if (sha) body.sha = sha;
-
     const res = await fetch(apiUrl, {
-        method: 'PUT',
-        headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        method:'PUT', headers:{ Authorization:'token '+token, 'Content-Type':'application/json' },
+        body: JSON.stringify(body)
+    });
+    return res.ok;
+}
+
+async function pushJsonToGitHub(path, data, message) {
+    const token = getToken();
+    if (!token) { showSaveBar('請先設定 GitHub Token', 'error'); return false; }
+    const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`;
+    let sha = '';
+    try {
+        const r = await fetch(apiUrl, { headers:{ Authorization:'token '+token } });
+        if (r.ok) sha = (await r.json()).sha;
+    } catch(e){}
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(data,null,2))));
+    const body = { message, content, branch:GITHUB_BRANCH };
+    if (sha) body.sha = sha;
+    const res = await fetch(apiUrl, {
+        method:'PUT', headers:{ Authorization:'token '+token, 'Content-Type':'application/json' },
+        body: JSON.stringify(body)
     });
     return res.ok;
 }
 
 async function saveShopData() {
-    showSaveBar('上傳中…');
-    const ok = await pushToGitHub('data/shop.json', JSON.stringify(shopData, null, 2), '✏️ 更新商品資料');
-    showSaveBar(ok ? '商品已發布！' : '發布失敗，請確認 Token 是否正確', ok ? 'success' : 'error');
+    showSaveBar('發布中…');
+    const ok = await pushJsonToGitHub('data/shop.json', shopData, '✏️ 更新商品資料');
+    showSaveBar(ok ? '商品已發布！' : '發布失敗，請確認 Token', ok ? 'success' : 'error');
 }
-
 async function saveBannerData() {
-    showSaveBar('上傳中…');
-    const ok = await pushToGitHub('data/banners.json', JSON.stringify(bannerData, null, 2), '🖼️ 更新輪播圖資料');
-    showSaveBar(ok ? '輪播圖已發布！' : '發布失敗，請確認 Token 是否正確', ok ? 'success' : 'error');
+    showSaveBar('發布中…');
+    const ok = await pushJsonToGitHub('data/banners.json', bannerData, '🖼️ 更新輪播圖');
+    showSaveBar(ok ? '輪播圖已發布！' : '發布失敗，請確認 Token', ok ? 'success' : 'error');
+}
+async function saveNoticeData() {
+    showSaveBar('發布中…');
+    const ok = await pushJsonToGitHub('data/notices.json', noticeData, '📢 更新公告');
+    showSaveBar(ok ? '公告已發布！' : '發布失敗，請確認 Token', ok ? 'success' : 'error');
 }
 
-// ── Toast ──
-let saveBarTimer;
-function showSaveBar(msg, type = '') {
+// ── Toast ──────────────────────────────────────────────
+let sbTimer;
+function showSaveBar(msg, type='') {
     const el = document.getElementById('save-bar');
     el.textContent = msg;
     el.className = 'save-bar show ' + type;
-    clearTimeout(saveBarTimer);
-    saveBarTimer = setTimeout(() => el.classList.remove('show'), 3000);
+    clearTimeout(sbTimer);
+    sbTimer = setTimeout(() => el.classList.remove('show'), 3000);
 }
 
 // 點空白關 modal
-document.getElementById('shop-modal').addEventListener('click', e => { if (e.target === document.getElementById('shop-modal')) closeShopModal(); });
-document.getElementById('banner-modal').addEventListener('click', e => { if (e.target === document.getElementById('banner-modal')) closeBannerModal(); });
+['shop-modal','banner-modal','notice-modal-admin'].forEach(id => {
+    document.getElementById(id).addEventListener('click', e => {
+        if (e.target.id === id) e.target.classList.remove('open');
+    });
+});
 </script>
 </body>
 </html>
