@@ -681,7 +681,16 @@ function openShopForm(idx) {
     document.getElementById('f-price').value = item.price || '';
     document.getElementById('f-img').value   = item.img   || '';
     document.getElementById('f-url').value   = item.url   || '';
-    document.getElementById('shop-img-preview').style.display = 'none';
+    // 若已有圖片（編輯模式），直接顯示預覽
+    const shopPreviewImg = document.getElementById('shop-preview-img');
+    const shopPreviewEl  = document.getElementById('shop-img-preview');
+    if (item.img) {
+        shopPreviewImg.src = item.img;
+        shopPreviewEl.style.display = 'block';
+    } else {
+        shopPreviewImg.src = '';
+        shopPreviewEl.style.display = 'none';
+    }
     document.getElementById('shop-modal').classList.add('open');
 }
 function closeShopModal() { document.getElementById('shop-modal').classList.remove('open'); }
@@ -730,7 +739,16 @@ function openBannerForm(idx) {
     document.getElementById('b-alt').value = b.alt || '';
     document.getElementById('b-img').value = b.img || '';
     document.getElementById('b-url').value = b.url || '';
-    document.getElementById('banner-img-preview').style.display = 'none';
+    // 若已有圖片（編輯模式），直接顯示預覽
+    const bannerPreviewImg = document.getElementById('banner-preview-img');
+    const bannerPreviewEl  = document.getElementById('banner-img-preview');
+    if (b.img) {
+        bannerPreviewImg.src = b.img;
+        bannerPreviewEl.style.display = 'block';
+    } else {
+        bannerPreviewImg.src = '';
+        bannerPreviewEl.style.display = 'none';
+    }
     document.getElementById('banner-modal').classList.add('open');
 }
 function closeBannerModal() { document.getElementById('banner-modal').classList.remove('open'); }
@@ -1033,6 +1051,30 @@ function showSaveBar(msg, type='') {
     clearTimeout(sbTimer);
     sbTimer = setTimeout(() => el.classList.remove('show'), 3000);
 }
+
+// ── 網址欄即時預覽 ─────────────────────────────────────
+document.getElementById('f-img').addEventListener('input', function() {
+    const v = this.value.trim();
+    const previewEl  = document.getElementById('shop-img-preview');
+    const previewImg = document.getElementById('shop-preview-img');
+    if (v) {
+        previewImg.src = v;
+        previewEl.style.display = 'block';
+    } else if (!shopUploadedBase64) {
+        previewEl.style.display = 'none';
+    }
+});
+document.getElementById('b-img').addEventListener('input', function() {
+    const v = this.value.trim();
+    const previewEl  = document.getElementById('banner-img-preview');
+    const previewImg = document.getElementById('banner-preview-img');
+    if (v) {
+        previewImg.src = v;
+        previewEl.style.display = 'block';
+    } else if (!bannerUploadedBase64) {
+        previewEl.style.display = 'none';
+    }
+});
 
 // 點空白關 modal
 ['shop-modal','banner-modal','notice-modal-admin'].forEach(id => {
