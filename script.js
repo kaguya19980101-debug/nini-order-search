@@ -322,7 +322,7 @@ function initShop() {
             card.innerHTML = `
                 <div class="shop-card-img-wrap">
                     <img src="${item.img}" alt="${item.name}" loading="lazy"
-                         onerror="this.src='images/shop/placeholder.jpg'">
+                         onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\'%3E%3Crect width=\'200\' height=\'200\' fill=\'%23f0f0f0\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%23999\' font-size=\'14\'%3E無圖片%3C/text%3E%3C/svg%3E'">
                     <span class="shop-card-tag">${item.tag}</span>
                 </div>
                 <div class="shop-card-info">
