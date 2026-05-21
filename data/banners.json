@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "img": "images/banner/banner_01.jpg",
+    "alt": "加入LINE群組",
+    "url": "https://line.me/R/ti/p/@yourid",
+    "clickable": true
+  },
+  {
+    "id": 2,
+    "img": "images/banner/banner_02.jpg",
+    "alt": "新品預告",
+    "url": "",
+    "clickable": false
+  },
+  {
+    "id": 3,
+    "img": "images/banner/banner_03.jpg",
+    "alt": "新品預告",
+    "url": "",
+    "clickable": false
+  },
+  {
+    "id": 4,
+    "img": "images/banner/banner_04.jpg",
+    "alt": "新品預告",
+    "url": "",
+    "clickable": false
+  }
+]

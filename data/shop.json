@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "name": "範例商品 A",
+    "tag": "扭蛋",
+    "desc": "日系扭蛋，隨機款式，品項齊全。",
+    "price": "$120",
+    "img": "images/shop/item_01.jpg",
+    "url": "https://shopee.tw"
+  },
+  {
+    "id": 2,
+    "name": "範例商品 B",
+    "tag": "週邊",
+    "desc": "動漫限定週邊，數量有限。",
+    "price": "$350",
+    "img": "images/shop/item_02.jpg",
+    "url": "https://shopee.tw"
+  },
+  {
+    "id": 3,
+    "name": "範例商品 C",
+    "tag": "生活",
+    "desc": "質感生活小物，送禮自用兩相宜。",
+    "price": "$280",
+    "img": "images/shop/item_03.jpg",
+    "url": "https://shopee.tw"
+  }
+]
