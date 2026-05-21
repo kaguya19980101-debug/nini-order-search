@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>妮妮後台管理</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4a9edd;
+            --primary-dark: #2f7fc1;
+            --primary-soft: #e8f4fd;
+            --accent: #ff7f6b;
+            --border: #cde8f8;
+            --text-main: #2d3e50;
+            --text-sub: #7a92a8;
+            --white: #ffffff;
+            --bg: #f4f9fd;
+            --radius: 14px;
+            --shadow: 0 4px 16px rgba(74,158,221,0.12);
+            --danger: #e53e3e;
+            --success: #38a169;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: "微軟正黑體", sans-serif; background: var(--bg); color: var(--text-main); min-height: 100vh; }
+
+        /* ── 登入畫面 ── */
+        #login-screen {
+            display: flex; align-items: center; justify-content: center;
+            min-height: 100vh; padding: 2rem;
+        }
+        .login-box {
+            background: var(--white); border-radius: 20px;
+            padding: 2.5rem; width: 100%; max-width: 380px;
+            box-shadow: var(--shadow);
+        }
+        .login-box h2 { color: var(--primary); margin-bottom: 0.3rem; font-size: 1.4rem; }
+        .login-box p  { color: var(--text-sub); font-size: 0.85rem; margin-bottom: 2rem; }
+        .login-box label { display: block; font-size: 0.85rem; color: var(--primary); font-weight: 700; margin-bottom: 0.4rem; }
+        .login-box input {
+            width: 100%; padding: 10px 14px; border-radius: 10px;
+            border: 1.5px solid var(--border); outline: none; font-size: 1rem;
+            margin-bottom: 1rem; transition: 0.2s;
+        }
+        .login-box input:focus { border-color: var(--primary); }
+        .login-error { color: var(--danger); font-size: 0.82rem; margin-bottom: 0.8rem; display: none; }
+
+        /* ── 主後台 ── */
+        #admin-screen { display: none; }
+
+        .admin-header {
+            background: var(--white); border-bottom: 2px solid var(--border);
+            padding: 0.9rem 1.5rem; display: flex; align-items: center;
+            justify-content: space-between; position: sticky; top: 0; z-index: 100;
+        }
+        .admin-header .logo { font-size: 1.1rem; font-weight: 900; color: var(--primary); }
+        .admin-header .logo span { color: var(--accent); }
+        .admin-header-right { display: flex; align-items: center; gap: 12px; }
+        .token-status { font-size: 0.78rem; color: var(--text-sub); }
+        .token-status.ok { color: var(--success); }
+
+        .admin-main { max-width: 900px; margin: 1.5rem auto; padding: 0 1.2rem 3rem; }
+
+        /* ── Tab ── */
+        .tabs { display: flex; gap: 8px; margin-bottom: 1.5rem; }
+        .tab-btn {
+            padding: 8px 20px; border-radius: 20px; border: 1.5px solid var(--border);
+            background: var(--white); color: var(--text-sub); font-size: 0.88rem;
+            cursor: pointer; transition: 0.2s; font-weight: 600;
+        }
+        .tab-btn.active { background: var(--primary); border-color: var(--primary); color: white; }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ── 卡片區 ── */
+        .panel-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        .panel-header h3 { font-size: 1rem; color: var(--text-main); }
+
+        /* ── Token 設定區 ── */
+        .token-section {
+            background: var(--white); border-radius: var(--radius);
+            padding: 1.2rem 1.4rem; margin-bottom: 1.5rem;
+            border: 1px solid var(--border); box-shadow: var(--shadow);
+        }
+        .token-section h4 { font-size: 0.9rem; color: var(--primary); margin-bottom: 0.8rem; }
+        .token-row { display: flex; gap: 8px; }
+        .token-row input {
+            flex: 1; padding: 8px 12px; border-radius: 8px;
+            border: 1.5px solid var(--border); outline: none; font-size: 0.85rem;
+        }
+        .token-row input:focus { border-color: var(--primary); }
+        .token-hint { font-size: 0.75rem; color: var(--text-sub); margin-top: 6px; line-height: 1.5; }
+        .token-hint a { color: var(--primary); }
+
+        /* ── 表格列表 ── */
+        .item-list { display: flex; flex-direction: column; gap: 10px; }
+        .item-row {
+            background: var(--white); border-radius: var(--radius);
+            border: 1px solid var(--border); padding: 14px 16px;
+            display: flex; align-items: center; gap: 12px;
+            box-shadow: var(--shadow);
+        }
+        .item-row-img {
+            width: 56px; height: 56px; border-radius: 8px;
+            object-fit: cover; background: var(--primary-soft); flex-shrink: 0;
+        }
+        .item-row-info { flex: 1; min-width: 0; }
+        .item-row-name { font-weight: 700; font-size: 0.92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .item-row-sub  { font-size: 0.78rem; color: var(--text-sub); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .item-row-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+        /* ── 輪播列表 ── */
+        .banner-row {
+            background: var(--white); border-radius: var(--radius);
+            border: 1px solid var(--border); padding: 12px 16px;
+            display: flex; align-items: center; gap: 12px;
+            box-shadow: var(--shadow);
+        }
+        .banner-row-img {
+            width: 90px; height: 50px; border-radius: 6px;
+            object-fit: cover; background: var(--primary-soft); flex-shrink: 0;
+        }
+        .banner-row-info { flex: 1; min-width: 0; }
+        .banner-row-alt  { font-weight: 600; font-size: 0.88rem; }
+        .banner-row-url  { font-size: 0.75rem; color: var(--text-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* ── 按鈕 ── */
+        .btn { padding: 7px 16px; border-radius: 20px; border: none; cursor: pointer; font-size: 0.82rem; font-weight: 700; transition: 0.2s; }
+        .btn-primary-sm { background: var(--primary); color: white; }
+        .btn-primary-sm:hover { background: var(--primary-dark); }
+        .btn-danger  { background: #fff5f5; color: var(--danger); border: 1px solid #fecaca; }
+        .btn-danger:hover  { background: var(--danger); color: white; }
+        .btn-edit    { background: var(--primary-soft); color: var(--primary); border: 1px solid var(--border); }
+        .btn-edit:hover { background: var(--primary); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { opacity: 0.88; }
+        .btn-outline { background: white; color: var(--primary); border: 1.5px solid var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: white; }
+
+        /* ── Modal 表單 ── */
+        .form-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(42,90,140,0.18); backdrop-filter: blur(6px);
+            z-index: 3000; align-items: center; justify-content: center; padding: 1rem;
+        }
+        .form-modal.open { display: flex; }
+        .form-box {
+            background: var(--white); border-radius: 20px; padding: 1.8rem;
+            width: 100%; max-width: 480px; box-shadow: 0 16px 40px rgba(74,158,221,0.2);
+            animation: popIn 0.25s cubic-bezier(0.175,0.885,0.32,1.275);
+            max-height: 90vh; overflow-y: auto;
+        }
+        @keyframes popIn { from { transform: scale(0.88); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .form-box h3 { color: var(--primary); margin-bottom: 1.2rem; font-size: 1rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-size: 0.82rem; color: var(--primary); font-weight: 700; margin-bottom: 0.35rem; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 9px 12px; border-radius: 10px;
+            border: 1.5px solid var(--border); outline: none; font-size: 0.92rem;
+            font-family: inherit; transition: 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); }
+        .form-group textarea { resize: vertical; min-height: 70px; }
+        .form-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.2rem; }
+        .form-hint { font-size: 0.75rem; color: var(--text-sub); margin-top: 4px; }
+
+        /* ── 儲存狀態 ── */
+        .save-bar {
+            position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+            background: var(--text-main); color: white; padding: 10px 24px;
+            border-radius: 40px; font-size: 0.88rem; font-weight: 600;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15); z-index: 5000;
+            opacity: 0; transition: opacity 0.3s; pointer-events: none;
+        }
+        .save-bar.show { opacity: 1; }
+        .save-bar.success { background: var(--success); }
+        .save-bar.error   { background: var(--danger); }
+
+        @media (max-width: 480px) {
+            .item-row { flex-wrap: wrap; }
+            .item-row-actions { width: 100%; justify-content: flex-end; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 登入畫面 -->
+<div id="login-screen">
+    <div class="login-box">
+        <h2>🔐 妮妮後台</h2>
+        <p>請輸入管理員密碼登入</p>
+        <label>密碼</label>
+        <input type="password" id="login-pwd" placeholder="輸入密碼" onkeydown="if(event.key==='Enter')doLogin()">
+        <div class="login-error" id="login-error">密碼錯誤，請再試一次</div>
+        <button class="btn btn-primary-sm" style="width:100%;padding:10px;" onclick="doLogin()">登入</button>
+    </div>
+</div>
+
+<!-- 主後台 -->
+<div id="admin-screen">
+    <header class="admin-header">
+        <div class="logo">nini <span>admin</span></div>
+        <div class="admin-header-right">
+            <span class="token-status" id="token-status">Token 未設定</span>
+            <button class="btn btn-outline" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> 登出</button>
+        </div>
+    </header>
+
+    <div class="admin-main">
+
+        <!-- Token 設定 -->
+        <div class="token-section">
+            <h4><i class="fas fa-key"></i> GitHub Token 設定</h4>
+            <div class="token-row">
+                <input type="password" id="github-token" placeholder="ghp_xxxxxxxxxxxxxxxx">
+                <button class="btn btn-primary-sm" onclick="saveToken()">儲存</button>
+                <button class="btn btn-danger" onclick="clearToken()">清除</button>
+            </div>
+            <p class="token-hint">
+                Token 只存在你的瀏覽器，不會上傳。需要有 <strong>repo</strong> 權限。<br>
+                取得方式：<a href="https://github.com/settings/tokens/new" target="_blank">GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)</a>，勾選 <strong>repo</strong>。
+            </p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('shop')"><i class="fas fa-shopping-bag"></i> 現貨商品</button>
+            <button class="tab-btn" onclick="switchTab('banner')"><i class="fas fa-images"></i> 輪播圖</button>
+        </div>
+
+        <!-- 商品 Tab -->
+        <div class="tab-panel active" id="tab-shop">
+            <div class="panel-header">
+                <h3>商品列表</h3>
+                <button class="btn btn-primary-sm" onclick="openShopForm()"><i class="fas fa-plus"></i> 新增商品</button>
+            </div>
+            <div class="item-list" id="shop-list"></div>
+            <div style="margin-top:1.2rem;text-align:right;">
+                <button class="btn btn-success" onclick="saveShopData()"><i class="fas fa-cloud-upload-alt"></i> 儲存並發布</button>
+            </div>
+        </div>
+
+        <!-- 輪播 Tab -->
+        <div class="tab-panel" id="tab-banner">
+            <div class="panel-header">
+                <h3>輪播圖列表</h3>
+                <button class="btn btn-primary-sm" onclick="openBannerForm()"><i class="fas fa-plus"></i> 新增輪播</button>
+            </div>
+            <div class="item-list" id="banner-list"></div>
+            <div style="margin-top:1.2rem;text-align:right;">
+                <button class="btn btn-success" onclick="saveBannerData()"><i class="fas fa-cloud-upload-alt"></i> 儲存並發布</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- 商品表單 Modal -->
+<div class="form-modal" id="shop-modal">
+    <div class="form-box">
+        <h3 id="shop-form-title">新增商品</h3>
+        <input type="hidden" id="shop-edit-id">
+        <div class="form-group">
+            <label>商品名稱 *</label>
+            <input type="text" id="f-name" placeholder="例：日系扭蛋 A">
+        </div>
+        <div class="form-group">
+            <label>分類標籤 *</label>
+            <input type="text" id="f-tag" placeholder="例：扭蛋、週邊、生活">
+        </div>
+        <div class="form-group">
+            <label>簡短說明</label>
+            <textarea id="f-desc" placeholder="簡短介紹這個商品"></textarea>
+        </div>
+        <div class="form-group">
+            <label>價格 *</label>
+            <input type="text" id="f-price" placeholder="例：$120">
+        </div>
+        <div class="form-group">
+            <label>圖片網址 *</label>
+            <input type="text" id="f-img" placeholder="https://... 或 images/shop/xxx.jpg">
+            <p class="form-hint">建議使用圖床（如 Imgur）或放在 repo 的 images/shop/ 資料夾</p>
+        </div>
+        <div class="form-group">
+            <label>賣場連結 *</label>
+            <input type="text" id="f-url" placeholder="https://shopee.tw/...">
+        </div>
+        <div class="form-footer">
+            <button class="btn btn-outline" onclick="closeShopModal()">取消</button>
+            <button class="btn btn-primary-sm" onclick="submitShopForm()">確認</button>
+        </div>
+    </div>
+</div>
+
+<!-- 輪播表單 Modal -->
+<div class="form-modal" id="banner-modal">
+    <div class="form-box">
+        <h3 id="banner-form-title">新增輪播圖</h3>
+        <input type="hidden" id="banner-edit-id">
+        <div class="form-group">
+            <label>說明文字（alt）</label>
+            <input type="text" id="b-alt" placeholder="例：新品預告">
+        </div>
+        <div class="form-group">
+            <label>圖片網址 *</label>
+            <input type="text" id="b-img" placeholder="https://... 或 images/banner/xxx.jpg">
+        </div>
+        <div class="form-group">
+            <label>點擊連結（可不填）</label>
+            <input type="text" id="b-url" placeholder="https://...">
+            <p class="form-hint">填了才會可以點擊，不填就是純展示圖</p>
+        </div>
+        <div class="form-footer">
+            <button class="btn btn-outline" onclick="closeBannerModal()">取消</button>
+            <button class="btn btn-primary-sm" onclick="submitBannerForm()">確認</button>
+        </div>
+    </div>
+</div>
+
+<!-- 儲存狀態列 -->
+<div class="save-bar" id="save-bar"></div>
+
+<script>
+const ADMIN_PASSWORD = 'nini2024';  // ← 改這裡換密碼
+const GITHUB_OWNER   = 'kaguya19980101-debug';
+const GITHUB_REPO    = 'nini-order-search';
+const GITHUB_BRANCH  = 'main';
+
+let shopData   = [];
+let bannerData = [];
+
+// ── 登入 ──
+function doLogin() {
+    const pwd = document.getElementById('login-pwd').value;
+    if (pwd === ADMIN_PASSWORD) {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('admin-screen').style.display = 'block';
+        loadToken();
+        loadAllData();
+    } else {
+        document.getElementById('login-error').style.display = 'block';
+    }
+}
+
+function doLogout() {
+    document.getElementById('admin-screen').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('login-pwd').value = '';
+}
+
+// ── Token ──
+function saveToken() {
+    const t = document.getElementById('github-token').value.trim();
+    if (!t) return;
+    localStorage.setItem('nini_gh_token', t);
+    updateTokenStatus();
+    showSaveBar('Token 已儲存', 'success');
+}
+function clearToken() {
+    localStorage.removeItem('nini_gh_token');
+    document.getElementById('github-token').value = '';
+    updateTokenStatus();
+}
+function loadToken() {
+    const t = localStorage.getItem('nini_gh_token');
+    if (t) document.getElementById('github-token').value = t;
+    updateTokenStatus();
+}
+function updateTokenStatus() {
+    const t = localStorage.getItem('nini_gh_token');
+    const el = document.getElementById('token-status');
+    el.textContent = t ? '✓ Token 已設定' : 'Token 未設定';
+    el.className = 'token-status' + (t ? ' ok' : '');
+}
+function getToken() { return localStorage.getItem('nini_gh_token') || ''; }
+
+// ── Tab ──
+function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', ['shop','banner'][i] === name));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+}
+
+// ── 讀取資料 ──
+async function loadAllData() {
+    try {
+        const [s, b] = await Promise.all([
+            fetch('data/shop.json?t=' + Date.now()).then(r => r.json()),
+            fetch('data/banners.json?t=' + Date.now()).then(r => r.json()),
+        ]);
+        shopData   = s;
+        bannerData = b;
+    } catch(e) {
+        shopData   = [];
+        bannerData = [];
+    }
+    renderShopList();
+    renderBannerList();
+}
+
+// ── 商品列表渲染 ──
+function renderShopList() {
+    const el = document.getElementById('shop-list');
+    if (!shopData.length) { el.innerHTML = '<p style="color:var(--text-sub);font-size:0.88rem;padding:1rem 0;">尚無商品</p>'; return; }
+    el.innerHTML = shopData.map((item, idx) => `
+        <div class="item-row">
+            <img class="item-row-img" src="${item.img}" onerror="this.src=''" alt="">
+            <div class="item-row-info">
+                <div class="item-row-name">${item.name}</div>
+                <div class="item-row-sub">${item.tag} · ${item.price} · <a href="${item.url}" target="_blank" style="color:var(--primary)">賣場連結</a></div>
+            </div>
+            <div class="item-row-actions">
+                ${idx > 0 ? `<button class="btn btn-edit" onclick="moveShop(${idx},-1)"><i class="fas fa-arrow-up"></i></button>` : ''}
+                ${idx < shopData.length-1 ? `<button class="btn btn-edit" onclick="moveShop(${idx},1)"><i class="fas fa-arrow-down"></i></button>` : ''}
+                <button class="btn btn-edit" onclick="openShopForm(${idx})"><i class="fas fa-pen"></i></button>
+                <button class="btn btn-danger" onclick="deleteShop(${idx})"><i class="fas fa-trash"></i></button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ── 輪播列表渲染 ──
+function renderBannerList() {
+    const el = document.getElementById('banner-list');
+    if (!bannerData.length) { el.innerHTML = '<p style="color:var(--text-sub);font-size:0.88rem;padding:1rem 0;">尚無輪播圖</p>'; return; }
+    el.innerHTML = bannerData.map((b, idx) => `
+        <div class="banner-row">
+            <img class="banner-row-img" src="${b.img}" onerror="this.src=''" alt="">
+            <div class="banner-row-info">
+                <div class="banner-row-alt">${b.alt || '（無說明）'}</div>
+                <div class="banner-row-url">${b.url || '純展示，無連結'}</div>
+            </div>
+            <div class="item-row-actions">
+                ${idx > 0 ? `<button class="btn btn-edit" onclick="moveBanner(${idx},-1)"><i class="fas fa-arrow-up"></i></button>` : ''}
+                ${idx < bannerData.length-1 ? `<button class="btn btn-edit" onclick="moveBanner(${idx},1)"><i class="fas fa-arrow-down"></i></button>` : ''}
+                <button class="btn btn-edit" onclick="openBannerForm(${idx})"><i class="fas fa-pen"></i></button>
+                <button class="btn btn-danger" onclick="deleteBanner(${idx})"><i class="fas fa-trash"></i></button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ── 商品 CRUD ──
+function openShopForm(idx) {
+    const modal = document.getElementById('shop-modal');
+    document.getElementById('shop-form-title').textContent = idx !== undefined ? '編輯商品' : '新增商品';
+    document.getElementById('shop-edit-id').value = idx !== undefined ? idx : '';
+    const item = idx !== undefined ? shopData[idx] : {};
+    document.getElementById('f-name').value  = item.name  || '';
+    document.getElementById('f-tag').value   = item.tag   || '';
+    document.getElementById('f-desc').value  = item.desc  || '';
+    document.getElementById('f-price').value = item.price || '';
+    document.getElementById('f-img').value   = item.img   || '';
+    document.getElementById('f-url').value   = item.url   || '';
+    modal.classList.add('open');
+}
+function closeShopModal() { document.getElementById('shop-modal').classList.remove('open'); }
+function submitShopForm() {
+    const name  = document.getElementById('f-name').value.trim();
+    const tag   = document.getElementById('f-tag').value.trim();
+    const price = document.getElementById('f-price').value.trim();
+    const img   = document.getElementById('f-img').value.trim();
+    const url   = document.getElementById('f-url').value.trim();
+    if (!name || !tag || !price || !img || !url) { alert('請填寫所有必填欄位（*）'); return; }
+    const item = { id: Date.now(), name, tag, desc: document.getElementById('f-desc').value.trim(), price, img, url };
+    const editId = document.getElementById('shop-edit-id').value;
+    if (editId !== '') shopData[parseInt(editId)] = item;
+    else shopData.push(item);
+    renderShopList();
+    closeShopModal();
+}
+function deleteShop(idx) {
+    if (!confirm(`確定刪除「${shopData[idx].name}」？`)) return;
+    shopData.splice(idx, 1);
+    renderShopList();
+}
+function moveShop(idx, dir) {
+    const tmp = shopData[idx]; shopData[idx] = shopData[idx+dir]; shopData[idx+dir] = tmp;
+    renderShopList();
+}
+
+// ── 輪播 CRUD ──
+function openBannerForm(idx) {
+    const modal = document.getElementById('banner-modal');
+    document.getElementById('banner-form-title').textContent = idx !== undefined ? '編輯輪播圖' : '新增輪播圖';
+    document.getElementById('banner-edit-id').value = idx !== undefined ? idx : '';
+    const b = idx !== undefined ? bannerData[idx] : {};
+    document.getElementById('b-alt').value = b.alt || '';
+    document.getElementById('b-img').value = b.img || '';
+    document.getElementById('b-url').value = b.url || '';
+    modal.classList.add('open');
+}
+function closeBannerModal() { document.getElementById('banner-modal').classList.remove('open'); }
+function submitBannerForm() {
+    const img = document.getElementById('b-img').value.trim();
+    if (!img) { alert('請填寫圖片網址'); return; }
+    const url = document.getElementById('b-url').value.trim();
+    const item = { id: Date.now(), img, alt: document.getElementById('b-alt').value.trim(), url, clickable: !!url };
+    const editId = document.getElementById('banner-edit-id').value;
+    if (editId !== '') bannerData[parseInt(editId)] = item;
+    else bannerData.push(item);
+    renderBannerList();
+    closeBannerModal();
+}
+function deleteBanner(idx) {
+    if (!confirm('確定刪除此輪播圖？')) return;
+    bannerData.splice(idx, 1);
+    renderBannerList();
+}
+function moveBanner(idx, dir) {
+    const tmp = bannerData[idx]; bannerData[idx] = bannerData[idx+dir]; bannerData[idx+dir] = tmp;
+    renderBannerList();
+}
+
+// ── 發布到 GitHub ──
+async function pushToGitHub(path, content, message) {
+    const token = getToken();
+    if (!token) { showSaveBar('請先設定 GitHub Token', 'error'); return false; }
+
+    const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`;
+
+    // 先取得現有檔案的 SHA（更新需要）
+    let sha = '';
+    try {
+        const res = await fetch(apiUrl, { headers: { Authorization: 'token ' + token } });
+        if (res.ok) { const d = await res.json(); sha = d.sha; }
+    } catch(e) {}
+
+    const body = { message, content: btoa(unescape(encodeURIComponent(content))), branch: GITHUB_BRANCH };
+    if (sha) body.sha = sha;
+
+    const res = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+    });
+    return res.ok;
+}
+
+async function saveShopData() {
+    showSaveBar('上傳中…');
+    const ok = await pushToGitHub('data/shop.json', JSON.stringify(shopData, null, 2), '✏️ 更新商品資料');
+    showSaveBar(ok ? '商品已發布！' : '發布失敗，請確認 Token 是否正確', ok ? 'success' : 'error');
+}
+
+async function saveBannerData() {
+    showSaveBar('上傳中…');
+    const ok = await pushToGitHub('data/banners.json', JSON.stringify(bannerData, null, 2), '🖼️ 更新輪播圖資料');
+    showSaveBar(ok ? '輪播圖已發布！' : '發布失敗，請確認 Token 是否正確', ok ? 'success' : 'error');
+}
+
+// ── Toast ──
+let saveBarTimer;
+function showSaveBar(msg, type = '') {
+    const el = document.getElementById('save-bar');
+    el.textContent = msg;
+    el.className = 'save-bar show ' + type;
+    clearTimeout(saveBarTimer);
+    saveBarTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// 點空白關 modal
+document.getElementById('shop-modal').addEventListener('click', e => { if (e.target === document.getElementById('shop-modal')) closeShopModal(); });
+document.getElementById('banner-modal').addEventListener('click', e => { if (e.target === document.getElementById('banner-modal')) closeBannerModal(); });
+</script>
+</body>
+</html>

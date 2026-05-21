@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>現貨賣場 | 妮妮小舖</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="top-nav">
+        <button id="menu-toggle" class="icon-btn"><i class="fas fa-bars"></i></button>
+        <div class="logo">nini order <span>search</span></div>
+    </header>
+
+    <nav id="side-menu" class="side-menu">
+        <div class="menu-header">
+            <h3>MENU</h3>
+            <button id="menu-close" class="close-btn"><i class="fas fa-times"></i></button>
+        </div>
+        <ul class="menu-list">
+            <li><a href="index.html"><i class="fas fa-home"></i> 首頁</a></li>
+            <li><a href="SHOP.html" class="active"><i class="fas fa-shopping-bag"></i> 現貨賣場</a></li>
+            <li><a href="about.html"><i class="fas fa-info-circle"></i> 關於我們</a></li>
+        </ul>
+        <div class="menu-footer">
+            <p>有問題嗎？找妮妮</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-line"></i></a>
+                <a href="#"><i class="fab fa-facebook-messenger"></i></a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <section class="shop-section">
+
+            <!-- 搜尋框 -->
+            <div class="shop-search-wrap">
+                <div class="shop-search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="shop-search" placeholder="搜尋商品名稱…">
+                    <button class="shop-clear-btn" id="shop-clear" style="display:none;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <p id="shop-count" class="shop-count"></p>
+            </div>
+
+            <!-- 商品格 -->
+            <div id="shop-grid" class="shop-grid"></div>
+
+            <!-- 無結果提示 -->
+            <div id="shop-empty" class="shop-empty" style="display:none;">
+                <i class="fas fa-box-open"></i>
+                <p>找不到符合的商品</p>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- 商品彈窗 -->
+    <div id="shop-modal" class="modal">
+        <div class="modal-content shop-modal-content">
+            <div class="shop-modal-img-wrap">
+                <img id="shop-modal-img" src="" alt="">
+            </div>
+            <div class="shop-modal-body">
+                <p id="shop-modal-tag" class="shop-modal-tag"></p>
+                <h3 id="shop-modal-title"></h3>
+                <p id="shop-modal-desc" class="shop-modal-desc"></p>
+                <p id="shop-modal-price" class="shop-modal-price"></p>
+                <a id="shop-modal-link" href="#" target="_blank" class="btn-primary shop-modal-btn">
+                    <i class="fas fa-external-link-alt"></i> 前往賣場
+                </a>
+            </div>
+            <button class="shop-modal-close" id="shop-modal-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
+    <script src="script.js"></script>
+</body>
+</html>

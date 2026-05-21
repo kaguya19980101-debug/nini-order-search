@@ -11,7 +11,7 @@
 
     <header class="top-nav">
         <button class="icon-btn" onclick="location.href='index.html'"><i class="fas fa-arrow-left"></i></button>
-        <div class="logo">nini order search</div>
+        <div class="logo">nini order <span>search</span></div>
     </header>
 
     <main class="main-content">
@@ -36,9 +36,21 @@
         </section>
 
         <section id="result-section" class="result-section" style="display: none;">
+            <div id="filter-bar" class="filter-bar">
+                <label class="filter-chip all-chip">
+                    <input type="checkbox" id="filter-all" checked>
+                    <span>全部</span>
+                </label>
+                <label class="filter-chip" data-status="已完成"><input type="checkbox" class="filter-status" value="已完成" checked><span>已完成</span></label>
+                <label class="filter-chip" data-status="已出貨"><input type="checkbox" class="filter-status" value="已出貨" checked><span>已出貨</span></label>
+                <label class="filter-chip" data-status="已抵台"><input type="checkbox" class="filter-status" value="已抵台" checked><span>已抵台</span></label>
+                <label class="filter-chip" data-status="運回中"><input type="checkbox" class="filter-status" value="運回中" checked><span>運回中</span></label>
+                <label class="filter-chip" data-status="已購入"><input type="checkbox" class="filter-status" value="已購入" checked><span>已購入</span></label>
+                <label class="filter-chip" data-status="待採買"><input type="checkbox" class="filter-status" value="待採買" checked><span>待採買</span></label>
+                <label class="filter-chip" data-status="已取消"><input type="checkbox" class="filter-status" value="已取消" checked><span>已取消</span></label>
+            </div>
             <div class="section-title">✦ 我的訂單紀錄</div>
-            <div id="cards-container" class="cards-container">
-                </div>
+            <div id="cards-container" class="cards-container"></div>
         </section>
     </main>
 

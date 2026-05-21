@@ -1,13 +1,14 @@
 :root {
     --primary:     #4a9edd;   /* 主藍 */
     --primary-dark:#2f7fc1;   /* 深藍，hover 用 */
-    --primary-soft:#e8f4fd;   /* 極淡藍底，卡片背景 */
-    --accent:      #7ec8e3;   /* 天藍，點綴 */
+    --primary-soft:#e8f4fd;   /* 極淡藍底 */
+    --accent:      #ff7f6b;   /* 珊瑚橘，點綴對比色 */
+    --accent-soft: #fff1ee;   /* 淡橘底 */
     --border:      #cde8f8;   /* 淡藍邊框 */
-    --text-main:   #2d3e50;   /* 深藍灰，主文字，高對比好閱讀 */
+    --text-main:   #2d3e50;   /* 深藍灰主文字 */
     --text-sub:    #7a92a8;   /* 次要文字 */
     --white:       #ffffff;
-    --bg:          #f4f9fd;   /* 頁面底色，帶一點藍 */
+    --bg:          #f4f9fd;   /* 頁面底色 */
     --radius:      18px;
     --shadow:      0 6px 20px rgba(74, 158, 221, 0.12);
 }
@@ -51,6 +52,7 @@ body {
     text-transform: lowercase;
     letter-spacing: 0.02em;
 }
+.logo span { color: var(--accent); } /* 讓 HTML 可以包一個 <span> 點色 */
 
 /* ── 側邊選單 ── */
 .side-menu {
@@ -100,16 +102,17 @@ body {
 .menu-list { list-style: none; padding: 16px 0; margin: 0; }
 
 .menu-list li a {
-    padding: 13px 24px;
+    padding: 15px 24px;
     text-decoration: none;
     color: var(--text-main);
     display: flex;
     align-items: center;
     gap: 14px;
-    font-size: 0.95rem;
+    font-size: 1.1rem;
+    font-weight: 600;
     transition: 0.25s;
 }
-.menu-list li a i { width: 20px; color: var(--primary); }
+.menu-list li a i { width: 22px; color: var(--primary); font-size: 1rem; }
 .menu-list li a:hover {
     background: var(--primary-soft);
     color: var(--primary);
@@ -159,7 +162,7 @@ body {
 
 /* ── 按鈕 ── */
 .btn-primary {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    background: var(--primary);
     color: white;
     border: none;
     padding: 0.8rem 2.5rem;
@@ -167,12 +170,13 @@ body {
     cursor: pointer;
     font-weight: bold;
     font-size: 1rem;
-    box-shadow: 0 4px 14px rgba(74, 158, 221, 0.35);
+    box-shadow: 0 4px 12px rgba(74, 158, 221, 0.3), 0 2px 8px rgba(255, 127, 107, 0.15);
     transition: 0.25s;
 }
 .btn-primary:hover {
+    background: var(--primary-dark);
     transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(74, 158, 221, 0.45);
+    box-shadow: 0 6px 16px rgba(74, 158, 221, 0.35), 0 3px 10px rgba(255, 127, 107, 0.2);
 }
 .btn-primary.loading {
     background: #d0d8e0 !important;
@@ -238,8 +242,20 @@ body {
 .section-title {
     font-size: 1.05rem;
     font-weight: bold;
-    color: var(--primary);
+    color: var(--text-main);
     margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.section-title::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 1.1em;
+    background: linear-gradient(to bottom, var(--primary), var(--accent));
+    border-radius: 4px;
+    flex-shrink: 0;
 }
 
 .notice-item {
@@ -253,16 +269,17 @@ body {
 }
 .notice-item:hover { background: var(--primary-soft); border-radius: 8px; padding-left: 6px; }
 
+/* notice-tag 依類型各自配色，由 JS 加 class */
 .notice-tag {
-    background: var(--primary-soft);
-    color: var(--primary);
     font-size: 0.68rem;
     font-weight: bold;
     padding: 2px 8px;
     border-radius: 8px;
-    border: 1px solid var(--border);
     white-space: nowrap;
 }
+.notice-tag-new  { background: #fff1ee; color: #e05c3a; border: 1px solid #ffbfaf; }
+.notice-tag-info { background: var(--primary-soft); color: var(--primary-dark); border: 1px solid var(--border); }
+.notice-tag-sale { background: #fefce8; color: #a16207; border: 1px solid #fde047; }
 
 .date { font-size: 0.78rem; color: var(--text-sub); }
 
@@ -490,5 +507,276 @@ body {
     .contact-grid { grid-template-columns: 1fr; }
 }
 
-/* ── 側邊選單重複宣告整合 ── */
+/* ── 篩選列 ── */
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 1rem;
+}
+
+.filter-chip {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    font-size: 0.78rem;
+    color: var(--text-sub);
+    cursor: pointer;
+    transition: 0.2s;
+    user-select: none;
+}
+.filter-chip input[type="checkbox"] { display: none; }
+
+.chip-count {
+    font-style: normal;
+    font-size: 0.68rem;
+    font-weight: 700;
+    background: rgba(0,0,0,0.08);
+    padding: 0px 5px;
+    border-radius: 10px;
+    margin-left: 2px;
+    line-height: 1.6;
+}
+/* 全部勾選時 count 用白色半透明 */
+.all-chip:has(input:checked) .chip-count {
+    background: rgba(255,255,255,0.25);
+    color: white;
+}
+
+/* 全部 */
+.all-chip:has(input:checked) {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+    font-weight: 700;
+}
+
+/* 各狀態勾選後套對應顏色 */
+.filter-chip[data-status="已完成"]:has(input:checked)  { background: #f0fdf4; color: #16a34a; border-color: #86efac; font-weight: 700; }
+.filter-chip[data-status="已出貨"]:has(input:checked)  { background: #eff6ff; color: #2563eb; border-color: #93c5fd; font-weight: 700; }
+.filter-chip[data-status="已抵台"]:has(input:checked)  { background: #e0f2fe; color: #0284c7; border-color: #7dd3fc; font-weight: 700; }
+.filter-chip[data-status="運回中"]:has(input:checked)  { background: #fefce8; color: #a16207; border-color: #fde047; font-weight: 700; }
+.filter-chip[data-status="已購入"]:has(input:checked)  { background: #faf5ff; color: #7c3aed; border-color: #c4b5fd; font-weight: 700; }
+.filter-chip[data-status="待採買"]:has(input:checked)  { background: #fff7ed; color: #c2410c; border-color: #fdba74; font-weight: 700; }
+.filter-chip[data-status="已取消"]:has(input:checked)  { background: #f8fafc; color: #94a3b8; border-color: #cbd5e1; font-weight: 700; }
+
+/* ── Toast 提示 ── */
+#toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: var(--text-main);
+    color: white;
+    padding: 0.7rem 1.4rem;
+    border-radius: 40px;
+    font-size: 0.88rem;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.25s, transform 0.25s;
+    z-index: 9999;
+    pointer-events: none;
+    box-shadow: 0 4px 16px rgba(45, 62, 80, 0.2);
+}
+#toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ── 現貨賣場 ── */
+.shop-section { padding-bottom: 2rem; }
+
+.shop-search-wrap { margin-bottom: 1.2rem; }
+
+.shop-search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 40px;
+    padding: 10px 16px;
+    box-shadow: var(--shadow);
+    transition: 0.2s;
+}
+.shop-search-box:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 4px 16px rgba(74, 158, 221, 0.18);
+}
+.shop-search-box i { color: var(--text-sub); font-size: 0.95rem; flex-shrink: 0; }
+.shop-search-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    background: transparent;
+}
+.shop-clear-btn {
+    background: none;
+    border: none;
+    color: var(--text-sub);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    padding: 0;
+    transition: color 0.2s;
+}
+.shop-clear-btn:hover { color: var(--primary); }
+
+.shop-count {
+    font-size: 0.78rem;
+    color: var(--text-sub);
+    margin-top: 6px;
+    padding-left: 4px;
+}
+
+.shop-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+@media (min-width: 600px) {
+    .shop-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.shop-card {
+    background: var(--white);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.shop-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgba(74, 158, 221, 0.18);
+}
+.shop-card:active { transform: scale(0.97); }
+
+.shop-card-img-wrap {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background: var(--primary-soft);
+    overflow: hidden;
+}
+.shop-card-img-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s;
+}
+.shop-card:hover .shop-card-img-wrap img { transform: scale(1.04); }
+
+.shop-card-tag {
+    position: absolute;
+    top: 8px; left: 8px;
+    background: var(--primary);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+}
+
+.shop-card-info { padding: 10px 12px 12px; }
+.shop-card-name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.shop-card-price {
+    font-size: 0.85rem;
+    color: var(--accent);
+    font-weight: 700;
+}
+
+.shop-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 3rem 0;
+    color: var(--text-sub);
+}
+.shop-empty i { font-size: 2.5rem; color: var(--border); }
+.shop-empty p { font-size: 0.9rem; }
+
+.shop-modal-content {
+    position: relative;
+    padding: 0;
+    overflow: hidden;
+    max-width: 400px;
+}
+.shop-modal-img-wrap {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: var(--primary-soft);
+    overflow: hidden;
+}
+.shop-modal-img-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.shop-modal-body { padding: 1.2rem 1.4rem 1.4rem; }
+.shop-modal-tag {
+    font-size: 0.72rem;
+    color: var(--primary);
+    font-weight: 700;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.shop-modal-body h3 {
+    font-size: 1.05rem;
+    color: var(--text-main);
+    margin-bottom: 6px;
+}
+.shop-modal-desc {
+    font-size: 0.85rem;
+    color: var(--text-sub);
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+.shop-modal-price {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--accent);
+    margin-bottom: 14px;
+}
+.shop-modal-btn {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    padding: 0.7rem;
+    font-size: 0.92rem;
+}
+.shop-modal-close {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: rgba(255,255,255,0.85);
+    border: none;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--text-main);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: 0.2s;
+}
+.shop-modal-close:hover { background: white; color: var(--accent); }
+
 .side-menu.active { left: 0 !important; }

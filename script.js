@@ -36,6 +36,13 @@ document.addEventListener('DOMContentLoaded', () => {
         loadNotices();
     }
 
+    // 現貨賣場
+    initShop();
+    const shopModalClose = document.getElementById('shop-modal-close');
+    if (shopModalClose) shopModalClose.addEventListener('click', closeShopModal);
+    const shopModal = document.getElementById('shop-modal');
+    if (shopModal) shopModal.addEventListener('click', e => { if (e.target === shopModal) closeShopModal(); });
+
 // --- 初始化輪播圖 (加入防呆) ---
     // 💡 只有當畫面上存在 .swiper 這個元素時，才執行 Swiper 初始化
     const swiperElement = document.querySelector('.swiper');
@@ -55,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const phone = document.getElementById('phone-number').value.trim();
 
             if (!community || !phone) {
-                alert('妮妮提醒：資訊要填完整喔！');
+                showToast('請把社群名稱和手機號碼填完整喔！');
                 return;
             }
 
@@ -160,6 +167,7 @@ function fetchDataFromGAS(community, phone) {
                     `;
                 }).join('');
                 if (resultSection) resultSection.style.display = 'block';
+                initFilter();
             } else {
                 container.innerHTML = '<p style="text-align:center; padding:20px;">找不到您的訂單，請檢查輸入資訊喔！</p>';
                 if (resultSection) resultSection.style.display = 'block';
@@ -211,8 +219,9 @@ function displayNotices(page) {
     paginatedItems.forEach(item => {
         const div = document.createElement('div');
         div.className = 'notice-item';
+        const tagClass = { NEW: 'notice-tag-new', INFO: 'notice-tag-info', SALE: 'notice-tag-sale' }[item.tag] || 'notice-tag-info';
         div.innerHTML = `
-            <div class="notice-tag">${item.tag}</div>
+            <div class="notice-tag ${tagClass}">${item.tag}</div>
             <div class="notice-body">
                 <span class="date">${item.date}</span>
                 <p><strong>${item.title}</strong></p>
@@ -261,4 +270,184 @@ function openNoticeModal(item) {
 // 關閉彈窗
 function closeNoticeModal() {
     document.getElementById('notice-modal').style.display = 'none';
+}
+
+// ── 現貨賣場 ──────────────────────────────────────────
+/**
+ * 商品資料，新增商品只需在此陣列加一筆：
+ * {
+ *   id:    唯一編號,
+ *   name:  商品名稱,
+ *   tag:   分類標籤 (e.g. '扭蛋' / '週邊' / '生活'),
+ *   desc:  簡短說明,
+ *   price: 價格文字 (e.g. '$120'),
+ *   img:   圖片路徑或 URL,
+ *   url:   賣場連結,
+ * }
+ */
+const SHOP_ITEMS = [
+    {
+        id: 1,
+        name: '範例商品 A',
+        tag: '扭蛋',
+        desc: '日系扭蛋，隨機款式，品項齊全。',
+        price: '$120',
+        img: 'images/shop/item_01.jpg',
+        url: 'https://shopee.tw',
+    },
+    {
+        id: 2,
+        name: '範例商品 B',
+        tag: '週邊',
+        desc: '動漫限定週邊，數量有限。',
+        price: '$350',
+        img: 'images/shop/item_02.jpg',
+        url: 'https://shopee.tw',
+    },
+    {
+        id: 3,
+        name: '範例商品 C',
+        tag: '生活',
+        desc: '質感生活小物，送禮自用兩相宜。',
+        price: '$280',
+        img: 'images/shop/item_03.jpg',
+        url: 'https://shopee.tw',
+    },
+];
+
+function initShop() {
+    if (!document.getElementById('shop-grid')) return;
+
+    const grid    = document.getElementById('shop-grid');
+    const empty   = document.getElementById('shop-empty');
+    const countEl = document.getElementById('shop-count');
+    const searchInput = document.getElementById('shop-search');
+    const clearBtn    = document.getElementById('shop-clear');
+
+    function renderItems(items) {
+        grid.innerHTML = '';
+        const show = items.length > 0;
+        empty.style.display = show ? 'none' : 'flex';
+        countEl.textContent = show ? `共 ${items.length} 件商品` : '';
+
+        items.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'shop-card';
+            card.innerHTML = `
+                <div class="shop-card-img-wrap">
+                    <img src="${item.img}" alt="${item.name}" loading="lazy"
+                         onerror="this.src='images/shop/placeholder.jpg'">
+                    <span class="shop-card-tag">${item.tag}</span>
+                </div>
+                <div class="shop-card-info">
+                    <p class="shop-card-name">${item.name}</p>
+                    <p class="shop-card-price">${item.price}</p>
+                </div>
+            `;
+            card.addEventListener('click', () => openShopModal(item));
+            grid.appendChild(card);
+        });
+    }
+
+    function filter() {
+        const q = searchInput.value.trim().toLowerCase();
+        clearBtn.style.display = q ? 'flex' : 'none';
+        const filtered = SHOP_ITEMS.filter(i =>
+            i.name.toLowerCase().includes(q) ||
+            i.tag.toLowerCase().includes(q) ||
+            i.desc.toLowerCase().includes(q)
+        );
+        renderItems(filtered);
+    }
+
+    searchInput.addEventListener('input', filter);
+    clearBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        clearBtn.style.display = 'none';
+        renderItems(SHOP_ITEMS);
+    });
+
+    renderItems(SHOP_ITEMS);
+}
+
+function openShopModal(item) {
+    document.getElementById('shop-modal-img').src      = item.img;
+    document.getElementById('shop-modal-title').textContent = item.name;
+    document.getElementById('shop-modal-tag').textContent   = item.tag;
+    document.getElementById('shop-modal-desc').textContent  = item.desc;
+    document.getElementById('shop-modal-price').textContent = item.price;
+    document.getElementById('shop-modal-link').href         = item.url;
+    document.getElementById('shop-modal').style.display = 'flex';
+}
+
+function closeShopModal() {
+    document.getElementById('shop-modal').style.display = 'none';
+}
+
+// 篩選邏輯
+function initFilter() {
+    const allChk = document.getElementById('filter-all');
+    const statusChks = document.querySelectorAll('.filter-status');
+    if (!allChk) return;
+
+    // 計算各狀態筆數並更新標籤
+    function updateCounts() {
+        const cards = document.querySelectorAll('.order-card');
+        const total = cards.length;
+
+        // 全部
+        const allSpan = allChk.closest('.filter-chip').querySelector('span');
+        allSpan.innerHTML = `全部 <em class="chip-count">${total}</em>`;
+
+        // 各狀態
+        statusChks.forEach(chk => {
+            const val = chk.value;
+            const count = [...cards].filter(card => {
+                const badge = card.querySelector('.status-badge');
+                return badge && badge.textContent.trim() === val;
+            }).length;
+            const span = chk.closest('.filter-chip').querySelector('span');
+            span.innerHTML = `${val} <em class="chip-count">${count}</em>`;
+        });
+    }
+
+    function applyFilter() {
+        const checked = [...statusChks].filter(c => c.checked).map(c => c.value);
+        document.querySelectorAll('.order-card').forEach(card => {
+            const badge = card.querySelector('.status-badge');
+            const status = badge ? badge.textContent.trim() : '';
+            card.style.display = checked.includes(status) ? 'block' : 'none';
+        });
+    }
+
+    updateCounts();
+
+    allChk.addEventListener('change', () => {
+        statusChks.forEach(c => c.checked = allChk.checked);
+        applyFilter();
+    });
+
+    statusChks.forEach(chk => {
+        chk.addEventListener('change', () => {
+            allChk.checked = [...statusChks].every(c => c.checked);
+            applyFilter();
+        });
+    });
+}
+
+// Toast 提示
+function showToast(msg) {
+    const existing = document.getElementById('toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(() => toast.classList.add('show'));
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 2500);
 }
