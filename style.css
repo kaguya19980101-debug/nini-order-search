@@ -130,6 +130,16 @@ body {
 .social-links { display: flex; justify-content: center; gap: 20px; font-size: 1.4rem; }
 .social-links a { color: var(--primary); }
 
+/* ── 社群品牌色（正確官方色，footer 與關於我們共用） ── */
+.ico-line   { color: #06C755 !important; }                 /* LINE 綠 */
+.ico-fb     { color: #1877F2 !important; }                 /* Facebook 藍 */
+.ico-threads{ color: #000000 !important; }                 /* 脆 Threads 黑 */
+.ico-ig {                                                   /* IG 官方漸層 */
+    background: linear-gradient(45deg,#feda75 0%,#fa7e1e 25%,#d62976 50%,#962fbf 75%,#4f5bd5 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+}
+
 /* ── 主內容 ── */
 .main-content {
     max-width: 800px;
@@ -562,7 +572,7 @@ body {
 .filter-chip[data-status="運回中"]:has(input:checked)  { background: #fefce8; color: #a16207; border-color: #fde047; font-weight: 700; }
 .filter-chip[data-status="已購入"]:has(input:checked)  { background: #faf5ff; color: #7c3aed; border-color: #c4b5fd; font-weight: 700; }
 .filter-chip[data-status="待採買"]:has(input:checked)  { background: #fff7ed; color: #c2410c; border-color: #fdba74; font-weight: 700; }
-.filter-chip[data-status="已取消"]:has(input:checked)  { background: #f8fafc; color: #94a3b8; border-color: #cbd5e1; font-weight: 700; }
+.filter-chip[data-status="已取消"]:has(input:checked)  { background: #e2e8f0; color: #1e293b; border-color: #94a3b8; font-weight: 700; }
 
 /* ── Toast 提示 ── */
 #toast {

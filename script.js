@@ -2,6 +2,24 @@
  * 妮妮訂單查詢系統 - 前端邏輯
  */
 
+/**
+ * 圖片載入失敗處理：最多重試 max 次，之後停止並顯示死圖
+ * 用法：<img ... onerror="imgRetry(this)">
+ */
+function imgRetry(img, max = 3) {
+    const n = (Number(img.dataset.retry) || 0) + 1;
+    img.dataset.retry = n;
+
+    if (n >= max) {
+        img.onerror = null;              // 關掉 handler，徹底停止重試（避免無限迴圈）
+        img.classList.add('img-dead');   // 可選：套死圖樣式
+        return;
+    }
+    // 加時間戳讓重試不吃快取，才有機會真的重抓成功
+    if (!img.dataset.baseSrc) img.dataset.baseSrc = img.src.split('?')[0];
+    img.src = img.dataset.baseSrc + '?retry=' + n;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log("JS 啟動成功！目前的頁面是：", window.location.pathname);
 // --- 1. 側邊選單通用邏輯 (每一頁都有用) ---
@@ -322,7 +340,7 @@ function initShop() {
             card.innerHTML = `
                 <div class="shop-card-img-wrap">
                     <img src="${item.img}" alt="${item.name}" loading="lazy"
-                         onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\'%3E%3Crect width=\'200\' height=\'200\' fill=\'%23f0f0f0\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%23999\' font-size=\'14\'%3E無圖片%3C/text%3E%3C/svg%3E'">
+                         onerror="imgRetry(this)">
                     <span class="shop-card-tag">${item.tag}</span>
                 </div>
                 <div class="shop-card-info">

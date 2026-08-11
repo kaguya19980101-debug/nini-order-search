@@ -539,6 +539,19 @@ let shopData   = [];
 let bannerData = [];
 let noticeData = [];
 
+// ── 圖片載入失敗處理：最多重試 max 次，之後停止並顯示死圖 ──
+function imgRetry(img, max = 3) {
+    const n = (Number(img.dataset.retry) || 0) + 1;
+    img.dataset.retry = n;
+    if (n >= max) {
+        img.onerror = null;              // 徹底停止重試，避免無限迴圈
+        img.classList.add('img-dead');
+        return;
+    }
+    if (!img.dataset.baseSrc) img.dataset.baseSrc = img.src.split('?')[0];
+    img.src = img.dataset.baseSrc + '?retry=' + n;
+}
+
 // ── 登入 ──────────────────────────────────────────────
 function doLogin() {
     if (document.getElementById('login-pwd').value === ADMIN_PASSWORD) {
@@ -608,7 +621,7 @@ function renderShopList() {
     if (!shopData.length) { el.innerHTML = emptyState('暫無商品，點上方按鈕新增'); return; }
     el.innerHTML = shopData.map((item,idx) => `
         <div class="item-row">
-            <img class="item-row-img" src="${item.img}" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'80\' height=\'80\'%3E%3Crect width=\'80\' height=\'80\' fill=\'%23f0f0f0\'/%3E%3C/svg%3E'" alt="">
+            <img class="item-row-img" src="${item.img}" onerror="imgRetry(this)" alt="">
             <div class="item-row-info">
                 <div class="item-row-name">${item.name}</div>
                 <div class="item-row-sub">${item.tag} · ${item.price} · <a href="${item.url}" target="_blank" style="color:var(--primary)">賣場連結 ↗</a></div>
@@ -628,7 +641,7 @@ function renderBannerList() {
     if (!bannerData.length) { el.innerHTML = emptyState('暫無輪播圖，點上方按鈕新增'); return; }
     el.innerHTML = bannerData.map((b,idx) => `
         <div class="item-row">
-            <img class="item-row-img banner-thumb" src="${b.img}" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'80\' height=\'80\'%3E%3Crect width=\'80\' height=\'80\' fill=\'%23f0f0f0\'/%3E%3C/svg%3E'" alt="">
+            <img class="item-row-img banner-thumb" src="${b.img}" onerror="imgRetry(this)" alt="">
             <div class="item-row-info">
                 <div class="item-row-name">${b.alt||'（無說明）'}</div>
                 <div class="item-row-sub">${b.url||'純展示，無連結'}</div>
