@@ -8,19 +8,21 @@
 <style>
 /* NINI ORDER — Theme 03 / 柔藍 × 奶油黃 / 2026-11-17 */
 :root {
-    --primary: #759cb8;
-    --primary-dark: #456c86;
-    --primary-soft: #edf3f6;
-    --accent: #f2d995;
+    --primary: #89bad8;
+    --primary-dark: #38647f;
+    --primary-soft: #edf7fd;
+    --primary-fill: #cde8f8;
+    --primary-hover: #bbdef3;
+    --accent: #f2dfa6;
     --accent-dark: #785a22;
-    --accent-soft: #fcf4dc;
-    --border: #e5e5dc;
-    --text-main: #343f45;
-    --text-sub: #626d71;
+    --accent-soft: #fff8e3;
+    --border: #d9e8f1;
+    --text-main: #334c5c;
+    --text-sub: #607789;
     --white: #ffffff;
-    --bg: #fafaf5;
+    --bg: #f3f9fd;
     --radius: 14px;
-    --shadow: 0 6px 20px rgba(57, 67, 67, .065);
+    --shadow: 0 6px 20px rgba(65, 102, 128, .07);
     --danger: #c34545;
     --success: #447553;
 }
@@ -289,13 +291,13 @@ body{font-family:"微軟正黑體",sans-serif;background:var(--bg);color:var(--t
 }
 
 
-/* NINI ADMIN · 柔藍與奶油黃，僅調整介面樣式 */
-body { background-image: radial-gradient(ellipse at 95% 0%, rgba(242,217,149,.13), transparent 36rem); }
+/* NINI ADMIN · 淺藍主色與少量奶油黃，僅調整介面樣式 */
+body { background-image: radial-gradient(ellipse at 95% 0%, rgba(159,209,240,.18), transparent 36rem); }
 #login-screen::before {
     background: radial-gradient(ellipse at 15% 20%, rgba(117,156,184,.14), transparent 45%),
-                radial-gradient(ellipse at 85% 80%, rgba(242,217,149,.30), transparent 45%);
+                radial-gradient(ellipse at 85% 80%, rgba(174,216,242,.25), transparent 45%);
 }
-.login-box { border: 1px solid var(--border); border-top: 5px solid var(--accent); background: #fffefa; }
+.login-box { border: 1px solid var(--border); border-top: 5px solid var(--primary-fill); background: #fff; }
 .login-logo .logo-text, .admin-header .logo-text { color: var(--primary-dark); }
 .login-logo .logo-text span, .admin-header .logo-text span {
     color: var(--accent-dark);
@@ -308,25 +310,25 @@ body { background-image: radial-gradient(ellipse at 95% 0%, rgba(242,217,149,.13
     border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(117,156,184,.14);
 }
-.admin-header { border-bottom: 3px solid var(--accent); background: #fffefa; }
+.admin-header { border-bottom: 3px solid var(--primary-fill); background: #eff8fe; }
 .header-dot:nth-child(1) { background: var(--primary); }
 .header-dot:nth-child(2) { background: var(--accent); }
 .header-dot:nth-child(3) { background: #a6b99a; }
-.token-section { background: #fffdf5; border-color: #e8dfc6; }
-.token-section::after { background: radial-gradient(circle,rgba(242,217,149,.28),transparent 70%); }
+.token-section { background: #f5fbff; border-color: var(--border); }
+.token-section::after { background: radial-gradient(circle,rgba(159,209,240,.23),transparent 70%); }
 .token-section h4 { color: var(--text-main); }
 .token-hint a, .item-row-sub a { color: var(--primary-dark); }
 .token-row input { min-width: 0; background: #fff; }
 .tab-btn { color: var(--text-sub); min-height: 40px; }
 .tab-btn.active { background: var(--primary-soft); border-color: #a9c0cf; color: var(--primary-dark); }
 .tab-btn.active i { color: var(--primary-dark); }
-.panel-header h3 { border-left: 4px solid var(--accent); padding-left: 10px; }
+.panel-header h3 { border-left: 4px solid var(--primary); padding-left: 10px; }
 .item-row { border-color: var(--border); }
 .item-row:hover { border-color: #b3c8d4; }
-.item-row-img { background: #f3f1e8; }
+.item-row-img { background: var(--primary-soft); }
 .btn { min-height: 38px; }
-.btn-primary-sm { background: var(--accent); color: var(--text-main); border: 1px solid #e5cb88; }
-.btn-primary-sm:hover { background: #eacb7e; color: var(--text-main); }
+.btn-primary-sm { background: var(--primary-fill); color: var(--text-main); border: 1px solid #abd2ea; }
+.btn-primary-sm:hover { background: var(--primary-hover); color: var(--text-main); }
 .btn-outline { background: #fff; color: var(--primary-dark); border-color: #b5c8d4; }
 .btn-outline:hover { background: var(--primary-soft); color: var(--primary-dark); }
 .btn-edit { background: var(--primary-soft); color: var(--primary-dark); border-color: #d4e0e7; }
@@ -340,13 +342,13 @@ body { background-image: radial-gradient(ellipse at 95% 0%, rgba(242,217,149,.13
 .ntag-INFO { background: var(--primary-soft); color: var(--primary-dark); border-color: #d4e0e7; }
 .ntag-SALE { background: #f7e9d4; color: #855529; border-color: #e8d2b1; }
 .form-modal { background: rgba(51,60,64,.25); }
-.form-box { border: 1px solid var(--border); border-top: 4px solid var(--accent); }
+.form-box { border: 1px solid var(--border); border-top: 4px solid var(--primary-fill); }
 .form-box h3 { color: var(--text-main); }
 .form-group input, .form-group select, .form-group textarea { background: #fff; color: var(--text-main); }
-.upload-zone { background: var(--accent-soft); border-color: #dccb9c; }
-.upload-zone:hover { background: #fbf0ce; border-color: #c9af6d; }
+.upload-zone { background: var(--primary-soft); border-color: #b6d7ea; }
+.upload-zone:hover { background: #e3f2fc; border-color: var(--primary); }
 .upload-zone i { color: var(--primary-dark); opacity: .8; }
-.upload-zone .size-hint { color: var(--accent-dark); }
+.upload-zone .size-hint { color: var(--primary-dark); }
 .form-hint { color: var(--text-sub); }
 .crop-ratio-hint { color: rgba(255,255,255,.82); }
 .save-bar.success { background: #447553; }
@@ -368,6 +370,8 @@ input::placeholder, textarea::placeholder { color: #777d7c; opacity: 1; }
     *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
 
+
+.item-row-sub a { color: var(--primary-dark) !important; }
 </style>
 </head>
 <body>
